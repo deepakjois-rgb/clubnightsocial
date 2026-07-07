@@ -52,3 +52,10 @@ export interface Court {
     state: CourtState;
     matchId?: string;
   }
+
+export type QueuedMatch = {
+  id: string;
+  type: MatchType;
+  matchSides: MatchSide[];
+  createdAt: number;
+};

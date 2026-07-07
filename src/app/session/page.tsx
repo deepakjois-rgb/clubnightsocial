@@ -66,7 +66,7 @@ export default function SetupPage() {
         players,
       },
     });
-    router.push("/live");
+    router.push("/queue");
   }
 
   return (
