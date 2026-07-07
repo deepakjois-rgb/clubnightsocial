@@ -22,4 +22,19 @@ export const MESSAGES = {
   SUMMARY_PLAYERS: "Players:",
 
   START_SESSION_BUTTON: "Start Session",
+
+  LIVE_PAGE_TITLE: "Live",
+  LIVE_ORGANISER: "Organiser",
+  LIVE_COURTS: "Courts",
+  LIVE_PLAYERS: "Players",
+  LIVE_DURATION: "Duration",
+  LIVE_DURATION_MINUTES: "min",
+  LIVE_COURTS_SECTION: "Courts",
+  LIVE_WAITING_PLAYERS: "Waiting players",
+  LIVE_UNAVAILABLE_PLAYERS: "Unavailable players",
+  LIVE_COURT_STATUS_FREE: "FREE",
+  LIVE_COURT_STATUS_OCCUPIED: "OCCUPIED",
+  LIVE_START_NEW_MATCH: "Start New Match",
+  LIVE_NO_WAITING_PLAYERS: "No players waiting",
+  LIVE_NO_UNAVAILABLE_PLAYERS: "No unavailable players",
 } as const;
