@@ -1,13 +1,18 @@
 "use client";
 
 import { useState, useRef, KeyboardEvent } from "react";
+import { useRouter } from "next/navigation";
 import { MESSAGES } from "@/constants/messages";
 import { APP_CONSTANTS } from "@/constants/appConstants";
+import { useSession } from "@/context/SessionContext";
 
 const M = MESSAGES;
 const AC = APP_CONSTANTS;
 
 export default function SetupPage() {
+  const router = useRouter();
+  const { dispatch } = useSession();
+
   const [organiserName, setOrganiserName] = useState("");
   const [courtCount, setCourtCount] = useState(3);
   const [players, setPlayers] = useState<string[]>([]);
@@ -51,6 +56,18 @@ export default function SetupPage() {
     courtCount >= AC.MIN_COURTS &&
     courtCount <= AC.MAX_COURTS &&
     players.length >= AC.MIN_PLAYERS_TO_START;
+
+  function handleStartSession() {
+    dispatch({
+      type: "START_SESSION",
+      payload: {
+        organiserName: organiserName.trim(),
+        numberOfCourts: courtCount,
+        players,
+      },
+    });
+    router.push("/live");
+  }
 
   return (
     <main className="max-w-lg mx-auto px-4 py-8 space-y-8">
@@ -177,6 +194,7 @@ export default function SetupPage() {
       <button
         type="button"
         disabled={!canStart}
+        onClick={handleStartSession}
         className="w-full py-3 bg-gray-900 text-white font-semibold rounded disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-700"
       >
         {M.START_SESSION_BUTTON}
