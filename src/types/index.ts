@@ -28,6 +28,7 @@ export type Player = {
   joinedAt: number;
   lastStateChangeAt: number;
   gamesPlayed: number;
+  waitingSince?: number;
 };
 
 export type MatchSide = {

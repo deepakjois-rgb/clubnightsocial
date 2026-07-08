@@ -1,4 +1,4 @@
-import type { Player, PlayerState } from "@/types";
+import type { PlayerState } from "@/types";
 
 type PlayerRowAction = {
   label: string;

@@ -12,6 +12,7 @@ import {
 } from "@/services/matchService";
 import {
   movePlayerState,
+  initializePlayer,
   type UpdatePlayerStatePayload,
 } from "@/services/playerService";
 
@@ -57,25 +58,16 @@ export function sessionReducer(
 
       // The organiser is automatically added as a player but marked
       // UNAVAILABLE — they run the session and do not join the queue.
-      const organiserPlayer: Player = {
-        id: uuidv4(),
-        name: organiserName,
-        state: "UNAVAILABLE",
-        joinedAt: now,
-        lastStateChangeAt: now,
-        gamesPlayed: 0,
-      };
+      const organiserPlayer = initializePlayer(
+        uuidv4(),
+        organiserName,
+        "UNAVAILABLE",
+        now
+      );
 
-      // All other players start in the WAITING state,
-      // ready to be picked for a match.
-      const otherPlayers: Player[] = players.map((name) => ({
-        id: uuidv4(),
-        name,
-        state: "WAITING",
-        joinedAt: now,
-        lastStateChangeAt: now,
-        gamesPlayed: 0,
-      }));
+      const otherPlayers: Player[] = players.map((name) =>
+        initializePlayer(uuidv4(), name, "WAITING", now)
+      );
 
       // Courts are numbered sequentially (Court 1, Court 2 …).
       // All start FREE with no match assigned.

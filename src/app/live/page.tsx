@@ -9,9 +9,11 @@ import {
   SessionHeader,
   CourtGrid,
   PlayerList,
+  WaitingPlayerList,
   StartMatchModal,
 } from "@/components/live";
 import { ConfirmDialog } from "@/components/matches";
+import { getWaitingPlayers } from "@/services/playerService";
 import type { Player, PlayerState } from "@/types";
 
 const M = MESSAGES;
@@ -41,9 +43,7 @@ export default function LivePage() {
     return null;
   }
 
-  const waitingPlayers = sortByName(
-    session.players.filter((p) => p.state === "WAITING")
-  );
+  const waitingPlayers = getWaitingPlayers(session);
 
   const unavailablePlayers = sortByName(
     session.players.filter((p) => p.state === "UNAVAILABLE")
@@ -99,7 +99,7 @@ export default function LivePage() {
           onAbandonMatch={setAbandonMatchId}
         />
 
-        <PlayerList
+        <WaitingPlayerList
           title={M.LIVE_WAITING_PLAYERS}
           players={waitingPlayers}
           emptyMessage={M.LIVE_NO_WAITING_PLAYERS}

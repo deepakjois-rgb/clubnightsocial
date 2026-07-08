@@ -1,4 +1,4 @@
-import type { PlayerState, Session } from "@/types";
+import type { Player, PlayerState, Session } from "@/types";
 
 export type UpdatePlayerStatePayload = {
   playerId: string;
@@ -21,6 +21,63 @@ export function canMovePlayerState(
   return ALLOWED_TRANSITIONS[currentState].includes(targetState);
 }
 
+export function applyPlayerStateChange(
+  player: Player,
+  targetState: PlayerState,
+  now: number
+): Player {
+  const updated: Player = {
+    ...player,
+    state: targetState,
+    lastStateChangeAt: now,
+  };
+
+  if (targetState === "WAITING") {
+    return { ...updated, waitingSince: now };
+  }
+
+  return { ...updated, waitingSince: undefined };
+}
+
+export function initializePlayer(
+  id: string,
+  name: string,
+  state: PlayerState,
+  now: number
+): Player {
+  return applyPlayerStateChange(
+    {
+      id,
+      name,
+      state,
+      joinedAt: now,
+      lastStateChangeAt: now,
+      gamesPlayed: 0,
+    },
+    state,
+    now
+  );
+}
+
+export function sortWaitingPlayers(players: Player[]): Player[] {
+  return [...players].sort((a, b) => {
+    const aWaitingSince = a.waitingSince ?? Number.MAX_SAFE_INTEGER;
+    const bWaitingSince = b.waitingSince ?? Number.MAX_SAFE_INTEGER;
+
+    if (aWaitingSince !== bWaitingSince) {
+      return aWaitingSince - bWaitingSince;
+    }
+
+    return a.name.localeCompare(b.name, undefined, { sensitivity: "base" });
+  });
+}
+
+export function getWaitingPlayers(session: Session): Player[] {
+  return sortWaitingPlayers(
+    session.players.filter((player) => player.state === "WAITING")
+  );
+}
+
 export function movePlayerState(
   session: Session,
   playerId: string,
@@ -37,9 +94,7 @@ export function movePlayerState(
   return {
     ...session,
     players: session.players.map((p) =>
-      p.id === playerId
-        ? { ...p, state: targetState, lastStateChangeAt: now }
-        : p
+      p.id === playerId ? applyPlayerStateChange(p, targetState, now) : p
     ),
   };
 }

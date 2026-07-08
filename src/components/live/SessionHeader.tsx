@@ -20,11 +20,7 @@ export function SessionHeader({ session }: SessionHeaderProps) {
     getElapsedMinutes(session.startedAt)
   );
 
-  // Recalculate elapsed minutes once per minute.
-  // An immediate update on mount keeps the value accurate after navigation.
   useEffect(() => {
-    setElapsedMinutes(getElapsedMinutes(session.startedAt));
-
     const interval = setInterval(() => {
       setElapsedMinutes(getElapsedMinutes(session.startedAt));
     }, 60_000);

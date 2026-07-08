@@ -47,6 +47,8 @@ export const MESSAGES = {
   LIVE_NO_UNAVAILABLE_PLAYERS: "No unavailable players",
   LIVE_MAKE_UNAVAILABLE: "Make Unavailable",
   LIVE_MOVE_TO_WAITING: "Move to Waiting",
+  LIVE_GAMES_PLAYED: "Games:",
+  LIVE_WAITING_TIME: "Waiting:",
   PLAYER_INVALID_TRANSITION: "Player cannot be moved while playing.",
   LIVE_ABANDON_CONFIRM: "Are you sure you want to abandon this match?",
   MATCH_INVALID_TRANSITION: "Invalid match transition.",

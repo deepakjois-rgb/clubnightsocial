@@ -6,6 +6,7 @@ import type {
   Session,
 } from "@/types";
 import { getMatchPlayerIds } from "@/lib/utils";
+import { applyPlayerStateChange } from "@/services/playerService";
 
 export type CreateQueuedMatchPayload = {
   type: MatchType;
@@ -44,12 +45,14 @@ function releaseCourtAndPlayers(
         return p;
       }
 
-      return {
-        ...p,
-        state: "WAITING" as const,
-        lastStateChangeAt: now,
-        gamesPlayed: incrementGamesPlayed ? p.gamesPlayed + 1 : p.gamesPlayed,
-      };
+      return applyPlayerStateChange(
+        {
+          ...p,
+          gamesPlayed: incrementGamesPlayed ? p.gamesPlayed + 1 : p.gamesPlayed,
+        },
+        "WAITING",
+        now
+      );
     }),
   };
 }
@@ -152,7 +155,7 @@ export function startMatch(
     ),
     players: session.players.map((p) =>
       playerIds.has(p.id)
-        ? { ...p, state: "PLAYING" as const, lastStateChangeAt: now }
+        ? applyPlayerStateChange(p, "PLAYING", now)
         : p
     ),
   };
