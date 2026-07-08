@@ -45,6 +45,9 @@ export const MESSAGES = {
   LIVE_START_NEW_MATCH: "Start New Match",
   LIVE_NO_WAITING_PLAYERS: "No players waiting",
   LIVE_NO_UNAVAILABLE_PLAYERS: "No unavailable players",
+  LIVE_MAKE_UNAVAILABLE: "Make Unavailable",
+  LIVE_MOVE_TO_WAITING: "Move to Waiting",
+  PLAYER_INVALID_TRANSITION: "Player cannot be moved while playing.",
 
   QUEUE_PAGE_TITLE: "Match Queue",
   QUEUE_BACK_BUTTON: "Back",

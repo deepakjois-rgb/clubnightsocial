@@ -11,7 +11,7 @@ import {
   PlayerList,
   StartMatchModal,
 } from "@/components/live";
-import type { Player } from "@/types";
+import type { Player, PlayerState } from "@/types";
 
 const M = MESSAGES;
 
@@ -68,6 +68,13 @@ export default function LivePage() {
     setStartMatchCourtId(null);
   }
 
+  function handleUpdatePlayerState(playerId: string, state: PlayerState) {
+    dispatch({
+      type: "UPDATE_PLAYER_STATE",
+      payload: { playerId, state },
+    });
+  }
+
   return (
     <>
       <main className="max-w-lg mx-auto px-4 py-8 space-y-8">
@@ -89,11 +96,20 @@ export default function LivePage() {
           title={M.LIVE_WAITING_PLAYERS}
           players={waitingPlayers}
           emptyMessage={M.LIVE_NO_WAITING_PLAYERS}
+          action={{
+            label: M.LIVE_MAKE_UNAVAILABLE,
+            onClick: (player) =>
+              handleUpdatePlayerState(player.id, "UNAVAILABLE"),
+          }}
         />
         <PlayerList
           title={M.LIVE_UNAVAILABLE_PLAYERS}
           players={unavailablePlayers}
           emptyMessage={M.LIVE_NO_UNAVAILABLE_PLAYERS}
+          action={{
+            label: M.LIVE_MOVE_TO_WAITING,
+            onClick: (player) => handleUpdatePlayerState(player.id, "WAITING"),
+          }}
         />
       </main>
 

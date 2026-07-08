@@ -7,8 +7,12 @@ import {
   type CreateQueuedMatchPayload,
   type StartMatchPayload,
 } from "@/services/matchService";
+import {
+  movePlayerState,
+  type UpdatePlayerStatePayload,
+} from "@/services/playerService";
 
-export type { CreateQueuedMatchPayload, StartMatchPayload };
+export type { CreateQueuedMatchPayload, StartMatchPayload, UpdatePlayerStatePayload };
 
 // The payload dispatched when starting a session.
 // Raw form data from the Setup screen — the reducer is responsible
@@ -26,7 +30,8 @@ export type SessionAction =
   | { type: "END_SESSION" }
   | { type: "CREATE_QUEUED_MATCH"; payload: CreateQueuedMatchPayload }
   | { type: "DELETE_QUEUED_MATCH"; payload: { matchId: string } }
-  | { type: "START_MATCH"; payload: StartMatchPayload };
+  | { type: "START_MATCH"; payload: StartMatchPayload }
+  | { type: "UPDATE_PLAYER_STATE"; payload: UpdatePlayerStatePayload };
 
 // Pure function: takes current state + action, returns next state.
 // State is null when no session is active.
@@ -107,6 +112,12 @@ export function sessionReducer(
     case "START_MATCH": {
       if (!state) return null;
       return startMatch(state, action.payload);
+    }
+
+    case "UPDATE_PLAYER_STATE": {
+      if (!state) return null;
+      const { playerId, state: playerState } = action.payload;
+      return movePlayerState(state, playerId, playerState);
     }
 
     default:
