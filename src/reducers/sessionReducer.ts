@@ -6,11 +6,9 @@ import {
   startMatch,
   completeMatch,
   abandonMatch,
-  updateMatchWinner,
   type CreateQueuedMatchPayload,
   type StartMatchPayload,
   type CompleteMatchPayload,
-  type UpdateMatchWinnerPayload,
 } from "@/services/matchService";
 import {
   movePlayerState,
@@ -21,7 +19,6 @@ export type {
   CreateQueuedMatchPayload,
   StartMatchPayload,
   CompleteMatchPayload,
-  UpdateMatchWinnerPayload,
   UpdatePlayerStatePayload,
 };
 
@@ -44,8 +41,7 @@ export type SessionAction =
   | { type: "START_MATCH"; payload: StartMatchPayload }
   | { type: "UPDATE_PLAYER_STATE"; payload: UpdatePlayerStatePayload }
   | { type: "COMPLETE_MATCH"; payload: CompleteMatchPayload }
-  | { type: "ABANDON_MATCH"; payload: { matchId: string } }
-  | { type: "UPDATE_MATCH_WINNER"; payload: UpdateMatchWinnerPayload };
+  | { type: "ABANDON_MATCH"; payload: { matchId: string } };
 
 // Pure function: takes current state + action, returns next state.
 // State is null when no session is active.
@@ -144,11 +140,6 @@ export function sessionReducer(
     case "ABANDON_MATCH": {
       if (!state) return null;
       return abandonMatch(state, action.payload.matchId);
-    }
-
-    case "UPDATE_MATCH_WINNER": {
-      if (!state) return null;
-      return updateMatchWinner(state, action.payload);
     }
 
     default:

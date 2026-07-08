@@ -11,16 +11,8 @@ import {
   PlayerList,
   StartMatchModal,
 } from "@/components/live";
-import {
-  ConfirmDialog,
-  WinnerSelector,
-  CompletedMatchList,
-} from "@/components/matches";
-import {
-  getCompletedMatches,
-  getMatchById,
-} from "@/services/matchService";
-import type { MatchSideType, Player, PlayerState } from "@/types";
+import { ConfirmDialog } from "@/components/matches";
+import type { Player, PlayerState } from "@/types";
 
 const M = MESSAGES;
 
@@ -37,11 +29,7 @@ export default function LivePage() {
   const [startMatchCourtId, setStartMatchCourtId] = useState<string | null>(
     null
   );
-  const [completeMatchId, setCompleteMatchId] = useState<string | null>(null);
   const [abandonMatchId, setAbandonMatchId] = useState<string | null>(null);
-  const [editWinnerMatchId, setEditWinnerMatchId] = useState<string | null>(
-    null
-  );
 
   useEffect(() => {
     if (!session) {
@@ -61,14 +49,7 @@ export default function LivePage() {
     session.players.filter((p) => p.state === "UNAVAILABLE")
   );
 
-  const completedMatches = getCompletedMatches(session);
   const selectedCourt = session.courts.find((c) => c.id === startMatchCourtId);
-  const completeMatch = completeMatchId
-    ? getMatchById(session, completeMatchId)
-    : null;
-  const editWinnerMatch = editWinnerMatchId
-    ? getMatchById(session, editWinnerMatchId)
-    : null;
 
   function handleSelectMatch(matchId: string) {
     if (!startMatchCourtId) return;
@@ -87,14 +68,11 @@ export default function LivePage() {
     });
   }
 
-  function handleCompleteMatch(winner: MatchSideType) {
-    if (!completeMatchId) return;
-
+  function handleCompleteMatch(matchId: string) {
     dispatch({
       type: "COMPLETE_MATCH",
-      payload: { matchId: completeMatchId, winner },
+      payload: { matchId },
     });
-    setCompleteMatchId(null);
   }
 
   function handleAbandonMatch() {
@@ -107,16 +85,6 @@ export default function LivePage() {
     setAbandonMatchId(null);
   }
 
-  function handleUpdateWinner(winner: MatchSideType) {
-    if (!editWinnerMatchId) return;
-
-    dispatch({
-      type: "UPDATE_MATCH_WINNER",
-      payload: { matchId: editWinnerMatchId, winner },
-    });
-    setEditWinnerMatchId(null);
-  }
-
   return (
     <>
       <main className="max-w-lg mx-auto px-4 py-8 space-y-8">
@@ -127,18 +95,9 @@ export default function LivePage() {
           matches={session.matches}
           players={session.players}
           onStartMatch={setStartMatchCourtId}
-          onCompleteMatch={setCompleteMatchId}
+          onCompleteMatch={handleCompleteMatch}
           onAbandonMatch={setAbandonMatchId}
         />
-
-        <section className="space-y-3">
-          <h2 className="text-lg font-semibold">{M.LIVE_COMPLETED_MATCHES}</h2>
-          <CompletedMatchList
-            matches={completedMatches}
-            players={session.players}
-            onEditWinner={setEditWinnerMatchId}
-          />
-        </section>
 
         <PlayerList
           title={M.LIVE_WAITING_PLAYERS}
@@ -167,23 +126,6 @@ export default function LivePage() {
         courtName={selectedCourt?.name ?? ""}
         onSelectMatch={handleSelectMatch}
         onClose={() => setStartMatchCourtId(null)}
-      />
-
-      <WinnerSelector
-        open={completeMatchId !== null}
-        match={completeMatch ?? null}
-        players={session.players}
-        onSelectWinner={handleCompleteMatch}
-        onClose={() => setCompleteMatchId(null)}
-      />
-
-      <WinnerSelector
-        open={editWinnerMatchId !== null}
-        match={editWinnerMatch ?? null}
-        players={session.players}
-        onSelectWinner={handleUpdateWinner}
-        onClose={() => setEditWinnerMatchId(null)}
-        title={M.LIVE_EDIT_WINNER}
       />
 
       <ConfirmDialog

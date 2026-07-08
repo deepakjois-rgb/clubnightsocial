@@ -2,7 +2,6 @@ import { v4 as uuidv4 } from "uuid";
 import type {
   Match,
   MatchSide,
-  MatchSideType,
   MatchType,
   Session,
 } from "@/types";
@@ -20,12 +19,6 @@ export type StartMatchPayload = {
 
 export type CompleteMatchPayload = {
   matchId: string;
-  winner: MatchSideType;
-};
-
-export type UpdateMatchWinnerPayload = {
-  matchId: string;
-  winner: MatchSideType;
 };
 
 function releaseCourtAndPlayers(
@@ -97,6 +90,10 @@ export function deleteQueuedMatch(
 
 export function getQueuedMatches(session: Session): Match[] {
   return session.matches.filter((m) => m.state === "QUEUED");
+}
+
+export function getLiveMatches(session: Session): Match[] {
+  return session.matches.filter((m) => m.state === "LIVE");
 }
 
 export function getCompletedMatches(session: Session): Match[] {
@@ -176,7 +173,6 @@ export function completeMatch(
   const updatedMatch: Match = {
     ...match,
     state: "COMPLETED",
-    winner: payload.winner,
     endedAt: now,
   };
 
@@ -214,24 +210,6 @@ export function abandonMatch(session: Session, matchId: string): Session {
   };
 
   return releaseCourtAndPlayers(withAbandonedMatch, updatedMatch, false);
-}
-
-export function updateMatchWinner(
-  session: Session,
-  payload: UpdateMatchWinnerPayload
-): Session {
-  const match = session.matches.find((m) => m.id === payload.matchId);
-
-  if (!match || match.state !== "COMPLETED") {
-    return session;
-  }
-
-  return {
-    ...session,
-    matches: session.matches.map((m) =>
-      m.id === payload.matchId ? { ...m, winner: payload.winner } : m
-    ),
-  };
 }
 
 export function getMatchById(

@@ -4,8 +4,18 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "@/context/SessionContext";
 import { MESSAGES } from "@/constants/messages";
-import { CreateMatchModal, QueuedMatchList, QueuePageHeader } from "@/components/queue";
-import { getQueuedMatches } from "@/services/matchService";
+import {
+  CreateMatchModal,
+  LiveMatchList,
+  QueuedMatchList,
+  QueuePageHeader,
+} from "@/components/queue";
+import { CompletedMatchList } from "@/components/matches";
+import {
+  getCompletedMatches,
+  getLiveMatches,
+  getQueuedMatches,
+} from "@/services/matchService";
 import type { CreateQueuedMatchPayload } from "@/services/matchService";
 
 const M = MESSAGES;
@@ -26,6 +36,8 @@ export default function QueuePage() {
   }
 
   const queuedMatches = getQueuedMatches(session);
+  const liveMatches = getLiveMatches(session);
+  const completedMatches = getCompletedMatches(session);
 
   function handleCreateMatch(payload: CreateQueuedMatchPayload) {
     dispatch({ type: "CREATE_QUEUED_MATCH", payload });
@@ -41,11 +53,35 @@ export default function QueuePage() {
       <main className="max-w-lg mx-auto px-4 py-8 pb-24 space-y-8">
         <QueuePageHeader onBack={() => router.push("/live")} />
 
-        <QueuedMatchList
-          matches={queuedMatches}
-          players={session.players}
-          onDelete={handleDeleteMatch}
-        />
+        <section className="space-y-3">
+          <h2 className="text-lg font-semibold">
+            {M.QUEUE_MATCH_QUEUE_SECTION} ({queuedMatches.length})
+          </h2>
+          <QueuedMatchList
+            matches={queuedMatches}
+            players={session.players}
+            onDelete={handleDeleteMatch}
+          />
+        </section>
+
+        <section className="space-y-3">
+          <h2 className="text-lg font-semibold">{M.QUEUE_LIVE_SECTION}</h2>
+          <LiveMatchList
+            matches={liveMatches}
+            courts={session.courts}
+            players={session.players}
+          />
+        </section>
+
+        <section className="space-y-3">
+          <h2 className="text-lg font-semibold">
+            {M.QUEUE_COMPLETED_SECTION} ({completedMatches.length})
+          </h2>
+          <CompletedMatchList
+            matches={completedMatches}
+            players={session.players}
+          />
+        </section>
       </main>
 
       <div className="fixed bottom-0 inset-x-0 border-t border-gray-200 bg-white px-4 py-4">
