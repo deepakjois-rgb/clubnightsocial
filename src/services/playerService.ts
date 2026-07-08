@@ -78,6 +78,16 @@ export function getWaitingPlayers(session: Session): Player[] {
   );
 }
 
+export function sortPlayersForSummary(players: Player[]): Player[] {
+  return [...players].sort((a, b) => {
+    if (a.gamesPlayed !== b.gamesPlayed) {
+      return b.gamesPlayed - a.gamesPlayed;
+    }
+
+    return a.name.localeCompare(b.name, undefined, { sensitivity: "base" });
+  });
+}
+
 export function movePlayerState(
   session: Session,
   playerId: string,

@@ -14,6 +14,11 @@ import {
 } from "@/components/live";
 import { ConfirmDialog } from "@/components/matches";
 import { getWaitingPlayers } from "@/services/playerService";
+import {
+  canEndSession,
+  isActiveSession,
+  isCompletedSession,
+} from "@/services/sessionService";
 import type { Player, PlayerState } from "@/types";
 
 const M = MESSAGES;
@@ -32,28 +37,44 @@ export default function LivePage() {
     null
   );
   const [abandonMatchId, setAbandonMatchId] = useState<string | null>(null);
+  const [showEndSessionConfirm, setShowEndSessionConfirm] = useState(false);
+  const [endSessionError, setEndSessionError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!session) {
       router.replace("/session");
+      return;
+    }
+
+    if (isCompletedSession(session)) {
+      router.replace("/sessionsummary");
     }
   }, [session, router]);
 
-  if (!session) {
+  if (!isActiveSession(session)) {
     return null;
   }
 
-  const waitingPlayers = getWaitingPlayers(session);
+  const activeSession = session;
+
+  const waitingPlayers = getWaitingPlayers(activeSession);
 
   const unavailablePlayers = sortByName(
-    session.players.filter((p) => p.state === "UNAVAILABLE")
+    activeSession.players.filter((p) => p.state === "UNAVAILABLE")
   );
 
-  const selectedCourt = session.courts.find((c) => c.id === startMatchCourtId);
+  const selectedCourt = activeSession.courts.find(
+    (c) => c.id === startMatchCourtId
+  );
+
+  function clearEndSessionError() {
+    setEndSessionError(null);
+  }
 
   function handleSelectMatch(matchId: string) {
     if (!startMatchCourtId) return;
 
+    clearEndSessionError();
     dispatch({
       type: "START_MATCH",
       payload: { courtId: startMatchCourtId, matchId },
@@ -62,6 +83,7 @@ export default function LivePage() {
   }
 
   function handleUpdatePlayerState(playerId: string, state: PlayerState) {
+    clearEndSessionError();
     dispatch({
       type: "UPDATE_PLAYER_STATE",
       payload: { playerId, state },
@@ -69,6 +91,7 @@ export default function LivePage() {
   }
 
   function handleCompleteMatch(matchId: string) {
+    clearEndSessionError();
     dispatch({
       type: "COMPLETE_MATCH",
       payload: { matchId },
@@ -78,6 +101,7 @@ export default function LivePage() {
   function handleAbandonMatch() {
     if (!abandonMatchId) return;
 
+    clearEndSessionError();
     dispatch({
       type: "ABANDON_MATCH",
       payload: { matchId: abandonMatchId },
@@ -85,18 +109,50 @@ export default function LivePage() {
     setAbandonMatchId(null);
   }
 
+  function handleEndSessionClick() {
+    if (!canEndSession(activeSession)) {
+      setEndSessionError(M.LIVE_END_SESSION_LIVE_MATCHES_ERROR);
+      return;
+    }
+
+    setEndSessionError(null);
+    setShowEndSessionConfirm(true);
+  }
+
+  function handleConfirmEndSession() {
+    dispatch({ type: "END_SESSION" });
+    setShowEndSessionConfirm(false);
+    router.push("/sessionsummary");
+  }
+
   return (
     <>
       <main className="max-w-lg mx-auto px-4 py-8 space-y-8">
-        <LivePageHeader onQueue={() => router.push("/queue")} />
-        <SessionHeader session={session} />
+        <LivePageHeader
+          onQueue={() => router.push("/queue")}
+          onEndSession={handleEndSessionClick}
+        />
+
+        {endSessionError && (
+          <p role="alert" className="text-sm text-red-600">
+            {endSessionError}
+          </p>
+        )}
+
+        <SessionHeader session={activeSession} />
         <CourtGrid
-          courts={session.courts}
-          matches={session.matches}
-          players={session.players}
-          onStartMatch={setStartMatchCourtId}
+          courts={activeSession.courts}
+          matches={activeSession.matches}
+          players={activeSession.players}
+          onStartMatch={(courtId) => {
+            clearEndSessionError();
+            setStartMatchCourtId(courtId);
+          }}
           onCompleteMatch={handleCompleteMatch}
-          onAbandonMatch={setAbandonMatchId}
+          onAbandonMatch={(matchId) => {
+            clearEndSessionError();
+            setAbandonMatchId(matchId);
+          }}
         />
 
         <WaitingPlayerList
@@ -122,7 +178,7 @@ export default function LivePage() {
 
       <StartMatchModal
         open={startMatchCourtId !== null}
-        session={session}
+        session={activeSession}
         courtName={selectedCourt?.name ?? ""}
         onSelectMatch={handleSelectMatch}
         onClose={() => setStartMatchCourtId(null)}
@@ -133,6 +189,13 @@ export default function LivePage() {
         message={M.LIVE_ABANDON_CONFIRM}
         onConfirm={handleAbandonMatch}
         onCancel={() => setAbandonMatchId(null)}
+      />
+
+      <ConfirmDialog
+        open={showEndSessionConfirm}
+        message={M.LIVE_END_SESSION_CONFIRM}
+        onConfirm={handleConfirmEndSession}
+        onCancel={() => setShowEndSessionConfirm(false)}
       />
     </>
   );

@@ -16,6 +16,10 @@ import {
   getLiveMatches,
   getQueuedMatches,
 } from "@/services/matchService";
+import {
+  isActiveSession,
+  isCompletedSession,
+} from "@/services/sessionService";
 import type { CreateQueuedMatchPayload } from "@/services/matchService";
 
 const M = MESSAGES;
@@ -28,10 +32,15 @@ export default function QueuePage() {
   useEffect(() => {
     if (!session) {
       router.replace("/session");
+      return;
+    }
+
+    if (isCompletedSession(session)) {
+      router.replace("/sessionsummary");
     }
   }, [session, router]);
 
-  if (!session) {
+  if (!isActiveSession(session)) {
     return null;
   }
 
@@ -65,7 +74,9 @@ export default function QueuePage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-lg font-semibold">{M.QUEUE_LIVE_SECTION}</h2>
+          <h2 className="text-lg font-semibold">
+            {M.QUEUE_LIVE_SECTION} ({liveMatches.length})
+          </h2>
           <LiveMatchList
             matches={liveMatches}
             courts={session.courts}

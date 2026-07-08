@@ -103,6 +103,10 @@ export function getCompletedMatches(session: Session): Match[] {
   return session.matches.filter((m) => m.state === "COMPLETED");
 }
 
+export function getAbandonedMatches(session: Session): Match[] {
+  return session.matches.filter((m) => m.state === "ABANDONED");
+}
+
 export function canStartMatch(session: Session, matchId: string): boolean {
   const match = session.matches.find((m) => m.id === matchId);
 

@@ -1,17 +1,32 @@
 "use client";
 
-import { useState, useRef, KeyboardEvent } from "react";
+import { useState, useRef, KeyboardEvent, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { MESSAGES } from "@/constants/messages";
 import { APP_CONSTANTS } from "@/constants/appConstants";
 import { useSession } from "@/context/SessionContext";
+import {
+  isActiveSession,
+  isCompletedSession,
+} from "@/services/sessionService";
 
 const M = MESSAGES;
 const AC = APP_CONSTANTS;
 
 export default function SetupPage() {
   const router = useRouter();
-  const { dispatch } = useSession();
+  const { session, dispatch } = useSession();
+
+  useEffect(() => {
+    if (isActiveSession(session)) {
+      router.replace("/live");
+      return;
+    }
+
+    if (isCompletedSession(session)) {
+      router.replace("/sessionsummary");
+    }
+  }, [session, router]);
 
   const [organiserName, setOrganiserName] = useState("");
   const [courtCount, setCourtCount] = useState(3);
@@ -19,6 +34,10 @@ export default function SetupPage() {
   const [playerInput, setPlayerInput] = useState("");
   const [duplicateError, setDuplicateError] = useState(false);
   const playerInputRef = useRef<HTMLInputElement>(null);
+
+  if (session) {
+    return null;
+  }
 
   function addPlayer() {
     const name = playerInput.trim();

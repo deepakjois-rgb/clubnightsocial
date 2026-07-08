@@ -15,6 +15,7 @@ import {
   initializePlayer,
   type UpdatePlayerStatePayload,
 } from "@/services/playerService";
+import { endSession } from "@/services/sessionService";
 
 export type {
   CreateQueuedMatchPayload,
@@ -37,6 +38,7 @@ export type StartSessionPayload = {
 export type SessionAction =
   | { type: "START_SESSION"; payload: StartSessionPayload }
   | { type: "END_SESSION" }
+  | { type: "CLEAR_SESSION" }
   | { type: "CREATE_QUEUED_MATCH"; payload: CreateQueuedMatchPayload }
   | { type: "DELETE_QUEUED_MATCH"; payload: { matchId: string } }
   | { type: "START_MATCH"; payload: StartMatchPayload }
@@ -93,14 +95,12 @@ export function sessionReducer(
     }
 
     case "END_SESSION": {
-      // Guard against dispatching END_SESSION when no session exists.
       if (!state) return null;
-      // Preserve all existing session data; only update status and end time.
-      return {
-        ...state,
-        state: "COMPLETED",
-        endedAt: Date.now(),
-      };
+      return endSession(state);
+    }
+
+    case "CLEAR_SESSION": {
+      return null;
     }
 
     case "CREATE_QUEUED_MATCH": {

@@ -60,6 +60,20 @@ export const MESSAGES = {
   LIVE_NO_COMPLETED_MATCHES: "No completed matches",
   LIVE_EDIT_WINNER: "Edit Winner",
   LIVE_CONFIRM: "Confirm",
+  LIVE_END_SESSION_CONFIRM: "Are you sure you want to end this session?",
+  LIVE_END_SESSION_LIVE_MATCHES_ERROR:
+    "Complete all live matches before ending the session.",
+
+  SUMMARY_PAGE_TITLE: "Session Summary",
+  SUMMARY_SESSION_INFORMATION: "Session Information",
+  SUMMARY_SESSION_STATISTICS: "Session Statistics",
+  SUMMARY_PLAYER_SUMMARY: "Player Summary",
+  SUMMARY_START_TIME: "Start time",
+  SUMMARY_END_TIME: "End time",
+  SUMMARY_DURATION: "Duration",
+  SUMMARY_COMPLETED_MATCHES: "Completed matches",
+  SUMMARY_ABANDONED_MATCHES: "Abandoned matches",
+  SUMMARY_START_NEW_SESSION: "Start new session",
 
   QUEUE_PAGE_TITLE: "Match Queue",
   QUEUE_BACK_BUTTON: "Back",

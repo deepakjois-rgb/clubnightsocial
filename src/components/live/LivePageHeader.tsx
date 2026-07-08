@@ -4,9 +4,10 @@ const M = MESSAGES;
 
 type LivePageHeaderProps = {
   onQueue: () => void;
+  onEndSession: () => void;
 };
 
-export function LivePageHeader({ onQueue }: LivePageHeaderProps) {
+export function LivePageHeader({ onQueue, onEndSession }: LivePageHeaderProps) {
   return (
     <header className="flex items-center justify-between gap-3">
       <h1 className="text-2xl font-bold">{M.LIVE_PAGE_TITLE}</h1>
@@ -20,8 +21,8 @@ export function LivePageHeader({ onQueue }: LivePageHeaderProps) {
         </button>
         <button
           type="button"
-          disabled
-          className="px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg text-gray-400 cursor-not-allowed"
+          onClick={onEndSession}
+          className="px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg hover:bg-gray-50"
         >
           {M.LIVE_END_SESSION_BUTTON}
         </button>

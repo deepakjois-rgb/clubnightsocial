@@ -4,6 +4,17 @@ export function getElapsedMinutes(startedAt: number): number {
   return Math.floor((Date.now() - startedAt) / 60_000);
 }
 
+export function getDurationMinutes(start: number, end: number): number {
+  return Math.floor((end - start) / 60_000);
+}
+
+export function formatTimestamp(timestamp: number): string {
+  return new Date(timestamp).toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
 export function getRequiredPlayerCount(type: MatchType): number {
   return type === "SINGLES" ? 2 : 4;
 }

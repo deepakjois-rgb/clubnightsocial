@@ -1,3 +1,5 @@
+import { redirect } from "next/navigation";
+
 export default function SummaryPage() {
-  return <main><h1>Summary</h1></main>;
+  redirect("/sessionsummary");
 }
