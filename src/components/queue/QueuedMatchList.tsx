@@ -1,11 +1,11 @@
-import type { Player, QueuedMatch } from "@/types";
+import type { Match, Player } from "@/types";
 import { MESSAGES } from "@/constants/messages";
 import { QueuedMatchCard } from "./QueuedMatchCard";
 
 const M = MESSAGES;
 
 type QueuedMatchListProps = {
-  matches: QueuedMatch[];
+  matches: Match[];
   players: Player[];
   onDelete: (id: string) => void;
 };

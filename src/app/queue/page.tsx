@@ -5,19 +5,14 @@ import { useRouter } from "next/navigation";
 import { useSession } from "@/context/SessionContext";
 import { MESSAGES } from "@/constants/messages";
 import { CreateMatchModal, QueuedMatchList } from "@/components/queue";
-import { getMatchPlayerIds, movePlayersToEnd } from "@/lib/utils";
-import type { Player, QueuedMatch } from "@/types";
+import { getQueuedMatches } from "@/services/matchService";
+import type { CreateQueuedMatchPayload } from "@/services/matchService";
 
 const M = MESSAGES;
 
 export default function QueuePage() {
   const router = useRouter();
-  const { session } = useSession();
-
-  const [queuedMatches, setQueuedMatches] = useState<QueuedMatch[]>([]);
-  const [orderedPlayers, setOrderedPlayers] = useState<Player[]>(
-    () => session?.players ?? []
-  );
+  const { session, dispatch } = useSession();
   const [showCreateForm, setShowCreateForm] = useState(false);
 
   useEffect(() => {
@@ -26,26 +21,19 @@ export default function QueuePage() {
     }
   }, [session, router]);
 
-  useEffect(() => {
-    if (session) {
-      setOrderedPlayers(session.players);
-    }
-  }, [session?.id]);
-
   if (!session) {
     return null;
   }
 
-  function handleCreateMatch(match: QueuedMatch) {
-    setQueuedMatches((prev) => [...prev, match]);
-    setOrderedPlayers((prev) =>
-      movePlayersToEnd(prev, getMatchPlayerIds(match.matchSides))
-    );
+  const queuedMatches = getQueuedMatches(session);
+
+  function handleCreateMatch(payload: CreateQueuedMatchPayload) {
+    dispatch({ type: "CREATE_QUEUED_MATCH", payload });
     setShowCreateForm(false);
   }
 
-  function handleDeleteMatch(id: string) {
-    setQueuedMatches((prev) => prev.filter((m) => m.id !== id));
+  function handleDeleteMatch(matchId: string) {
+    dispatch({ type: "DELETE_QUEUED_MATCH", payload: { matchId } });
   }
 
   return (
@@ -74,7 +62,7 @@ export default function QueuePage() {
 
       <CreateMatchModal
         open={showCreateForm}
-        players={orderedPlayers}
+        players={session.players}
         onSubmit={handleCreateMatch}
         onClose={() => setShowCreateForm(false)}
       />

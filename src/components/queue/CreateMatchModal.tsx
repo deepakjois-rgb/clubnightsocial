@@ -1,15 +1,16 @@
 "use client";
 
-import type { Player, QueuedMatch } from "@/types";
+import type { Player } from "@/types";
 import { MESSAGES } from "@/constants/messages";
 import { CreateMatchForm } from "./CreateMatchForm";
+import type { CreateQueuedMatchPayload } from "@/services/matchService";
 
 const M = MESSAGES;
 
 type CreateMatchModalProps = {
   open: boolean;
   players: Player[];
-  onSubmit: (match: QueuedMatch) => void;
+  onSubmit: (payload: CreateQueuedMatchPayload) => void;
   onClose: () => void;
 };
 

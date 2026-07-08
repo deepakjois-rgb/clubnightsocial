@@ -1,5 +1,12 @@
 import { v4 as uuidv4 } from "uuid";
 import type { Session, Player, Court } from "@/types";
+import {
+  createQueuedMatch,
+  deleteQueuedMatch,
+  type CreateQueuedMatchPayload,
+} from "@/services/matchService";
+
+export type { CreateQueuedMatchPayload };
 
 // The payload dispatched when starting a session.
 // Raw form data from the Setup screen — the reducer is responsible
@@ -14,7 +21,9 @@ export type StartSessionPayload = {
 // Discriminated union — the "type" field determines which case runs.
 export type SessionAction =
   | { type: "START_SESSION"; payload: StartSessionPayload }
-  | { type: "END_SESSION" };
+  | { type: "END_SESSION" }
+  | { type: "CREATE_QUEUED_MATCH"; payload: CreateQueuedMatchPayload }
+  | { type: "DELETE_QUEUED_MATCH"; payload: { matchId: string } };
 
 // Pure function: takes current state + action, returns next state.
 // State is null when no session is active.
@@ -80,6 +89,16 @@ export function sessionReducer(
         state: "COMPLETED",
         endedAt: Date.now(),
       };
+    }
+
+    case "CREATE_QUEUED_MATCH": {
+      if (!state) return null;
+      return createQueuedMatch(state, action.payload);
+    }
+
+    case "DELETE_QUEUED_MATCH": {
+      if (!state) return null;
+      return deleteQueuedMatch(state, action.payload.matchId);
     }
 
     default:

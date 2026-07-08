@@ -1,17 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import { v4 as uuidv4 } from "uuid";
-import type { Player, MatchType, QueuedMatch } from "@/types";
+import type { Player, MatchType } from "@/types";
 import { MESSAGES } from "@/constants/messages";
 import { APP_CONSTANTS } from "@/constants/appConstants";
 import { getRequiredPlayerCount, buildMatchSides, getSidePlayerIds } from "@/lib/utils";
+import type { CreateQueuedMatchPayload } from "@/services/matchService";
 
 const M = MESSAGES;
 
 type CreateMatchFormProps = {
   players: Player[];
-  onSubmit: (match: QueuedMatch) => void;
+  onSubmit: (payload: CreateQueuedMatchPayload) => void;
   onCancel: () => void;
 };
 
@@ -78,10 +78,8 @@ export function CreateMatchForm({
     }
 
     onSubmit({
-      id: uuidv4(),
       type: matchType,
       matchSides: buildMatchSides(selectedPlayerIds, matchType),
-      createdAt: Date.now(),
     });
   }
 

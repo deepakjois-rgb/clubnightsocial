@@ -1,16 +1,16 @@
-import type { Player, QueuedMatch } from "@/types";
+import type { Match, Player } from "@/types";
 import { MESSAGES } from "@/constants/messages";
 import { getSidePlayerIds } from "@/lib/utils";
 
 const M = MESSAGES;
 
 type QueuedMatchCardProps = {
-  match: QueuedMatch;
+  match: Match;
   players: Player[];
   onDelete: (id: string) => void;
 };
 
-function getMatchTypeLabel(type: QueuedMatch["type"]): string {
+function getMatchTypeLabel(type: Match["type"]): string {
   return type === "SINGLES" ? M.QUEUE_MATCH_TYPE_SINGLES : M.QUEUE_MATCH_TYPE_DOUBLES;
 }
 
