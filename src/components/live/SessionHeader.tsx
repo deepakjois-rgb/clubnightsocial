@@ -34,8 +34,6 @@ export function SessionHeader({ session }: SessionHeaderProps) {
 
   return (
     <section className="space-y-3">
-      <h1 className="text-2xl font-bold">{M.LIVE_PAGE_TITLE}</h1>
-
       {/* Two-column grid of session stats */}
       <dl className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
         <div>

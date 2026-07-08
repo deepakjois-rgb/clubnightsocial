@@ -1,4 +1,4 @@
-import type { Court } from "@/types";
+import type { Court, Match, Player } from "@/types";
 import { MESSAGES } from "@/constants/messages";
 import { CourtCard } from "./CourtCard";
 
@@ -6,15 +6,33 @@ const M = MESSAGES;
 
 type CourtGridProps = {
   courts: Court[];
+  matches: Match[];
+  players: Player[];
+  onStartMatch: (courtId: string) => void;
 };
 
-export function CourtGrid({ courts }: CourtGridProps) {
+export function CourtGrid({
+  courts,
+  matches,
+  players,
+  onStartMatch,
+}: CourtGridProps) {
   return (
     <section className="space-y-3">
       <h2 className="text-lg font-semibold">{M.LIVE_COURTS_SECTION}</h2>
       <div className="grid grid-cols-1 gap-3">
         {courts.map((court) => (
-          <CourtCard key={court.id} court={court} />
+          <CourtCard
+            key={court.id}
+            court={court}
+            match={
+              court.matchId
+                ? matches.find((m) => m.id === court.matchId)
+                : undefined
+            }
+            players={players}
+            onStartMatch={onStartMatch}
+          />
         ))}
       </div>
     </section>

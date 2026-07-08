@@ -23,7 +23,15 @@ export const MESSAGES = {
 
   START_SESSION_BUTTON: "Start Session",
 
-  LIVE_PAGE_TITLE: "Live",
+  LIVE_PAGE_TITLE: "Live Dashboard",
+  LIVE_QUEUE_BUTTON: "Queue",
+  LIVE_END_SESSION_BUTTON: "End Session",
+  LIVE_BACK_BUTTON: "Back",
+  LIVE_SELECT_MATCH_TITLE: "Select Match",
+  LIVE_NO_QUEUED_MATCHES: "No matches queued",
+  LIVE_PLAYERS_UNAVAILABLE: "One or more players are no longer available.",
+  LIVE_COMPLETE_MATCH: "Complete Match",
+  LIVE_ABANDON_MATCH: "Abandon Match",
   LIVE_ORGANISER: "Organiser",
   LIVE_COURTS: "Courts",
   LIVE_PLAYERS: "Players",
@@ -39,6 +47,7 @@ export const MESSAGES = {
   LIVE_NO_UNAVAILABLE_PLAYERS: "No unavailable players",
 
   QUEUE_PAGE_TITLE: "Match Queue",
+  QUEUE_BACK_BUTTON: "Back",
   QUEUE_CREATE_MATCH: "Create Match",
   QUEUE_CREATE_MATCH_MODAL_TITLE: "Create Match",
   QUEUE_NO_MATCHES: "No matches queued",

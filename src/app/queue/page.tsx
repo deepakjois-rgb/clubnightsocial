@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "@/context/SessionContext";
 import { MESSAGES } from "@/constants/messages";
-import { CreateMatchModal, QueuedMatchList } from "@/components/queue";
+import { CreateMatchModal, QueuedMatchList, QueuePageHeader } from "@/components/queue";
 import { getQueuedMatches } from "@/services/matchService";
 import type { CreateQueuedMatchPayload } from "@/services/matchService";
 
@@ -39,7 +39,7 @@ export default function QueuePage() {
   return (
     <>
       <main className="max-w-lg mx-auto px-4 py-8 pb-24 space-y-8">
-        <h1 className="text-2xl font-bold">{M.QUEUE_PAGE_TITLE}</h1>
+        <QueuePageHeader onBack={() => router.push("/live")} />
 
         <QueuedMatchList
           matches={queuedMatches}
