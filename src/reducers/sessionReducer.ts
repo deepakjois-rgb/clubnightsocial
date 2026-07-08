@@ -37,6 +37,7 @@ export type StartSessionPayload = {
 // Discriminated union — the "type" field determines which case runs.
 export type SessionAction =
   | { type: "START_SESSION"; payload: StartSessionPayload }
+  | { type: "RESTORE_SESSION"; payload: Session }
   | { type: "END_SESSION" }
   | { type: "CLEAR_SESSION" }
   | { type: "CREATE_QUEUED_MATCH"; payload: CreateQueuedMatchPayload }
@@ -92,6 +93,10 @@ export function sessionReducer(
         courts,
         matches: [],
       };
+    }
+
+    case "RESTORE_SESSION": {
+      return action.payload;
     }
 
     case "END_SESSION": {
