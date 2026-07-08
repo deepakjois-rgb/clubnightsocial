@@ -9,6 +9,8 @@ type CourtGridProps = {
   matches: Match[];
   players: Player[];
   onStartMatch: (courtId: string) => void;
+  onCompleteMatch: (matchId: string) => void;
+  onAbandonMatch: (matchId: string) => void;
 };
 
 export function CourtGrid({
@@ -16,6 +18,8 @@ export function CourtGrid({
   matches,
   players,
   onStartMatch,
+  onCompleteMatch,
+  onAbandonMatch,
 }: CourtGridProps) {
   return (
     <section className="space-y-3">
@@ -32,6 +36,8 @@ export function CourtGrid({
             }
             players={players}
             onStartMatch={onStartMatch}
+            onCompleteMatch={onCompleteMatch}
+            onAbandonMatch={onAbandonMatch}
           />
         ))}
       </div>

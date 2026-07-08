@@ -4,15 +4,26 @@ import {
   createQueuedMatch,
   deleteQueuedMatch,
   startMatch,
+  completeMatch,
+  abandonMatch,
+  updateMatchWinner,
   type CreateQueuedMatchPayload,
   type StartMatchPayload,
+  type CompleteMatchPayload,
+  type UpdateMatchWinnerPayload,
 } from "@/services/matchService";
 import {
   movePlayerState,
   type UpdatePlayerStatePayload,
 } from "@/services/playerService";
 
-export type { CreateQueuedMatchPayload, StartMatchPayload, UpdatePlayerStatePayload };
+export type {
+  CreateQueuedMatchPayload,
+  StartMatchPayload,
+  CompleteMatchPayload,
+  UpdateMatchWinnerPayload,
+  UpdatePlayerStatePayload,
+};
 
 // The payload dispatched when starting a session.
 // Raw form data from the Setup screen — the reducer is responsible
@@ -31,7 +42,10 @@ export type SessionAction =
   | { type: "CREATE_QUEUED_MATCH"; payload: CreateQueuedMatchPayload }
   | { type: "DELETE_QUEUED_MATCH"; payload: { matchId: string } }
   | { type: "START_MATCH"; payload: StartMatchPayload }
-  | { type: "UPDATE_PLAYER_STATE"; payload: UpdatePlayerStatePayload };
+  | { type: "UPDATE_PLAYER_STATE"; payload: UpdatePlayerStatePayload }
+  | { type: "COMPLETE_MATCH"; payload: CompleteMatchPayload }
+  | { type: "ABANDON_MATCH"; payload: { matchId: string } }
+  | { type: "UPDATE_MATCH_WINNER"; payload: UpdateMatchWinnerPayload };
 
 // Pure function: takes current state + action, returns next state.
 // State is null when no session is active.
@@ -53,6 +67,7 @@ export function sessionReducer(
         state: "UNAVAILABLE",
         joinedAt: now,
         lastStateChangeAt: now,
+        gamesPlayed: 0,
       };
 
       // All other players start in the WAITING state,
@@ -63,6 +78,7 @@ export function sessionReducer(
         state: "WAITING",
         joinedAt: now,
         lastStateChangeAt: now,
+        gamesPlayed: 0,
       }));
 
       // Courts are numbered sequentially (Court 1, Court 2 …).
@@ -118,6 +134,21 @@ export function sessionReducer(
       if (!state) return null;
       const { playerId, state: playerState } = action.payload;
       return movePlayerState(state, playerId, playerState);
+    }
+
+    case "COMPLETE_MATCH": {
+      if (!state) return null;
+      return completeMatch(state, action.payload);
+    }
+
+    case "ABANDON_MATCH": {
+      if (!state) return null;
+      return abandonMatch(state, action.payload.matchId);
+    }
+
+    case "UPDATE_MATCH_WINNER": {
+      if (!state) return null;
+      return updateMatchWinner(state, action.payload);
     }
 
     default:

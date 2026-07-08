@@ -27,6 +27,7 @@ export type Player = {
   state: PlayerState;
   joinedAt: number;
   lastStateChangeAt: number;
+  gamesPlayed: number;
 };
 
 export type MatchSide = {

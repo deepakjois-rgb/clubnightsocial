@@ -1,5 +1,6 @@
 import type { Court, Match, Player } from "@/types";
 import { MESSAGES } from "@/constants/messages";
+import { MatchControls } from "@/components/matches/MatchControls";
 import { getSidePlayerIds } from "@/lib/utils";
 
 const M = MESSAGES;
@@ -9,6 +10,8 @@ type CourtCardProps = {
   match?: Match;
   players: Player[];
   onStartMatch: (courtId: string) => void;
+  onCompleteMatch: (matchId: string) => void;
+  onAbandonMatch: (matchId: string) => void;
 };
 
 function getMatchTypeLabel(type: Match["type"]): string {
@@ -22,8 +25,11 @@ export function CourtCard({
   match,
   players,
   onStartMatch,
+  onCompleteMatch,
+  onAbandonMatch,
 }: CourtCardProps) {
   const isFree = court.state === "FREE";
+  const isLive = match?.state === "LIVE";
 
   function getPlayerName(id: string): string {
     return players.find((p) => p.id === id)?.name ?? id;
@@ -54,7 +60,7 @@ export function CourtCard({
         </button>
       )}
 
-      {!isFree && match && (
+      {isLive && match && (
         <>
           <p className="text-sm font-semibold">{getMatchTypeLabel(match.type)}</p>
           <div className="text-sm space-y-1">
@@ -66,20 +72,10 @@ export function CourtCard({
               <p key={id}>{getPlayerName(id)}</p>
             ))}
           </div>
-          <button
-            type="button"
-            disabled
-            className="w-full py-3 text-sm font-medium border border-gray-300 rounded-lg text-gray-400 cursor-not-allowed"
-          >
-            {M.LIVE_COMPLETE_MATCH}
-          </button>
-          <button
-            type="button"
-            disabled
-            className="w-full py-3 text-sm font-medium border border-gray-300 rounded-lg text-gray-400 cursor-not-allowed"
-          >
-            {M.LIVE_ABANDON_MATCH}
-          </button>
+          <MatchControls
+            onComplete={() => onCompleteMatch(match.id)}
+            onAbandon={() => onAbandonMatch(match.id)}
+          />
         </>
       )}
     </div>
