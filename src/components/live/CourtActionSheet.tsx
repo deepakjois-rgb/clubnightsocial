@@ -152,15 +152,17 @@ export function CourtActionSheet({
                 session={session}
                 onSelectMatch={onSelectMatch}
               />
+
+              <hr className="h-px my-6 bg-neutral-quaternary border border-border"></hr>
+
+              <h3 className="text-base font-semibold text-foreground">
+                {M.LIVE_CREATE_NEW_SECTION}
+            </h3>
             </section>
           )}
 
-          <hr className="h-px my-4 bg-neutral-quaternary border border-border"></hr>
-
+          
           <section className="space-y-3">
-            <h3 className="text-base font-semibold text-foreground">
-              {M.LIVE_CREATE_NEW_SECTION}
-            </h3>
             <MatchComposer
               players={session.players}
               mode="court"
