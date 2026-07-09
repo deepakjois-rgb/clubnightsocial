@@ -11,40 +11,42 @@ type CourtCardProps = {
   court: Court;
   match?: Match;
   players: Player[];
+  queuedMatchCount?: number;
   onStartMatch: (courtId: string) => void;
   onCompleteMatch: (matchId: string) => void;
   onAbandonMatch: (matchId: string) => void;
 };
 
-function getMatchTypeLabel(type: Match["type"]): string {
-  return type === "SINGLES"
-    ? M.QUEUE_MATCH_TYPE_SINGLES
-    : M.QUEUE_MATCH_TYPE_DOUBLES;
-}
-
 function CourtSurface({
   sideAIds,
   sideBIds,
   getPlayerName,
-  matchType,
+  compact = false,
 }: {
   sideAIds: string[];
   sideBIds: string[];
   getPlayerName: (id: string) => string;
-  matchType?: Match["type"];
+  compact?: boolean;
 }) {
+  const isEmpty = sideAIds.length === 0 && sideBIds.length === 0;
+
   return (
-    <div className="relative flex rounded-[var(--radius)] bg-shuttle-lime-muted/60 border border-[var(--court-green)]/10 min-h-[7rem] overflow-hidden">
-      {/* Side A */}
-      <div className="flex-1 flex flex-col items-center justify-center gap-1 p-3">
+    <div
+      className={`relative flex rounded-[var(--radius)] bg-shuttle-lime-muted/60 border border-[var(--court-green)]/10 overflow-hidden ${
+        isEmpty ? "min-h-[3.5rem]" : compact ? "min-h-[4.5rem]" : "min-h-[5.5rem]"
+      }`}
+    >
+      <div className="flex-1 flex flex-col items-center justify-center gap-0.5 p-2">
         {sideAIds.map((id) => (
-          <span key={id} className="text-sm font-medium text-foreground text-center">
+          <span
+            key={id}
+            className="text-sm font-medium text-foreground text-center leading-tight"
+          >
             {getPlayerName(id)}
           </span>
         ))}
       </div>
 
-      {/* Net */}
       <div
         className="w-px shrink-0 bg-[var(--court-green)]/25 relative"
         aria-hidden="true"
@@ -52,20 +54,16 @@ function CourtSurface({
         <div className="absolute inset-y-2 left-1/2 -translate-x-1/2 w-0.5 bg-[var(--court-green)]/40 rounded-full" />
       </div>
 
-      {/* Side B */}
-      <div className="flex-1 flex flex-col items-center justify-center gap-1 p-3">
+      <div className="flex-1 flex flex-col items-center justify-center gap-0.5 p-2">
         {sideBIds.map((id) => (
-          <span key={id} className="text-sm font-medium text-foreground text-center">
+          <span
+            key={id}
+            className="text-sm font-medium text-foreground text-center leading-tight"
+          >
             {getPlayerName(id)}
           </span>
         ))}
       </div>
-
-      {matchType && (
-        <span className="absolute top-2 left-1/2 -translate-x-1/2 text-[10px] font-medium text-muted uppercase tracking-wide">
-          {getMatchTypeLabel(matchType)}
-        </span>
-      )}
     </div>
   );
 }
@@ -74,6 +72,7 @@ export function CourtCard({
   court,
   match,
   players,
+  queuedMatchCount = 0,
   onStartMatch,
   onCompleteMatch,
   onAbandonMatch,
@@ -86,9 +85,9 @@ export function CourtCard({
   }
 
   return (
-    <Card className="space-y-4">
+    <Card className="space-y-3 !p-3">
       <div className="flex items-center justify-between">
-        <h3 className="text-base font-bold text-court-green">{court.name}</h3>
+        <h3 className="text-sm font-bold text-court-green">{court.name}</h3>
         <Badge className={getCourtStatusBadgeClass(isFree)}>
           {getCourtStatusLabel(isFree)}
         </Badge>
@@ -101,7 +100,20 @@ export function CourtCard({
             sideBIds={[]}
             getPlayerName={getPlayerName}
           />
-          <Button variant="primary" fullWidth onClick={() => onStartMatch(court.id)}>
+          <p className="text-xs text-muted text-center">
+            {queuedMatchCount > 0
+              ? M.LIVE_COURT_QUEUE_COUNT.replace(
+                  "{n}",
+                  String(queuedMatchCount)
+                )
+              : M.LIVE_COURT_NO_QUEUE}
+          </p>
+          <Button
+            variant="primary"
+            fullWidth
+            className="py-2.5"
+            onClick={() => onStartMatch(court.id)}
+          >
             {M.LIVE_START_MATCH}
           </Button>
         </>
@@ -113,7 +125,7 @@ export function CourtCard({
             sideAIds={getSidePlayerIds(match.matchSides, "A")}
             sideBIds={getSidePlayerIds(match.matchSides, "B")}
             getPlayerName={getPlayerName}
-            matchType={match.type}
+            compact
           />
           <MatchControls
             onComplete={() => onCompleteMatch(match.id)}

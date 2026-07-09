@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { MESSAGES } from "@/constants/messages";
 import { APP_CONSTANTS } from "@/constants/appConstants";
 import { useSession } from "@/context/SessionContext";
-import { Button, Card, useToast } from "@/components/ui";
+import { Button, useToast } from "@/components/ui";
 import {
   isActiveSession,
   isCompletedSession,
@@ -195,37 +195,20 @@ export default function SetupPage() {
             </ul>
           )}
         </section>
-
-        <Card>
-          <h2 className="text-sm font-semibold text-muted mb-3">{M.SUMMARY_SECTION}</h2>
-          <dl className="grid grid-cols-3 gap-3 text-center text-sm">
-            <div>
-              <dt className="text-muted text-xs">{M.SUMMARY_COURTS}</dt>
-              <dd className="font-semibold text-foreground mt-0.5">{courtCount}</dd>
-            </div>
-            <div>
-              <dt className="text-muted text-xs">{M.SUMMARY_PLAYERS}</dt>
-              <dd className="font-semibold text-foreground mt-0.5">{players.length}</dd>
-            </div>
-            <div>
-              <dt className="text-muted text-xs">{M.SUMMARY_ORGANISER}</dt>
-              <dd className="font-semibold text-foreground mt-0.5 truncate">
-                {organiserName.trim() || "—"}
-              </dd>
-            </div>
-          </dl>
-        </Card>
       </main>
 
-      {canStart && (
-        <div className="fixed bottom-0 inset-x-0 border-t border-border bg-card/95 backdrop-blur-sm px-4 py-4">
-          <div className="max-w-lg mx-auto">
-            <Button variant="primary" fullWidth onClick={handleStartSession}>
-              {M.START_SESSION_BUTTON}
-            </Button>
-          </div>
+      <div className="fixed bottom-0 inset-x-0 border-t border-border bg-card/95 backdrop-blur-sm px-4 py-4">
+        <div className="max-w-lg mx-auto">
+          <Button
+            variant="primary"
+            fullWidth
+            disabled={!canStart}
+            onClick={handleStartSession}
+          >
+            {M.START_SESSION_BUTTON}
+          </Button>
         </div>
-      )}
+      </div>
     </>
   );
 }

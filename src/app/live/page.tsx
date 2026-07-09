@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "@/context/SessionContext";
 import { MESSAGES } from "@/constants/messages";
@@ -8,18 +8,21 @@ import {
   LivePageHeader,
   SessionHeader,
   CourtGrid,
-  StartMatchModal,
+  CourtActionSheet,
 } from "@/components/live";
 import { ConfirmDialog } from "@/components/matches";
 import { WaitingPlayerList } from "@/components/players/WaitingPlayerList";
 import { PlayerList } from "@/components/players/PlayerList";
-import { Button, useToast } from "@/components/ui";
+import { useToast } from "@/components/ui";
 import { getWaitingPlayers } from "@/services/playerService";
+import { canStartMatch, getQueuedMatches } from "@/services/matchService";
 import {
   canEndSession,
   isActiveSession,
   isCompletedSession,
 } from "@/services/sessionService";
+import { matchPayloadEquals } from "@/lib/matchUtils";
+import type { CreateQueuedMatchPayload } from "@/services/matchService";
 import type { Player, PlayerState } from "@/types";
 
 const M = MESSAGES;
@@ -42,6 +45,11 @@ export default function LivePage() {
   const [showEndSessionConfirm, setShowEndSessionConfirm] = useState(false);
   const [endSessionError, setEndSessionError] = useState<string | null>(null);
 
+  const pendingCourtStartRef = useRef<{
+    courtId: string;
+    payload: CreateQueuedMatchPayload;
+  } | null>(null);
+
   useEffect(() => {
     if (!session) {
       router.replace("/session");
@@ -53,6 +61,25 @@ export default function LivePage() {
     }
   }, [session, router]);
 
+  useEffect(() => {
+    if (!pendingCourtStartRef.current || !session) return;
+
+    const { courtId, payload } = pendingCourtStartRef.current;
+    const match = session.matches.find(
+      (m) => m.state === "QUEUED" && matchPayloadEquals(m, payload)
+    );
+
+    if (!match || !canStartMatch(session, match.id)) return;
+
+    pendingCourtStartRef.current = null;
+    dispatch({
+      type: "START_MATCH",
+      payload: { courtId, matchId: match.id },
+    });
+    setStartMatchCourtId(null);
+    showToast(M.TOAST_MATCH_STARTED);
+  }, [session, dispatch, showToast]);
+
   if (!isActiveSession(session)) {
     return null;
   }
@@ -60,6 +87,7 @@ export default function LivePage() {
   const activeSession = session;
 
   const waitingPlayers = getWaitingPlayers(activeSession);
+  const queuedMatchCount = getQueuedMatches(activeSession).length;
 
   const unavailablePlayers = sortByName(
     activeSession.players.filter((p) => p.state === "UNAVAILABLE")
@@ -82,6 +110,25 @@ export default function LivePage() {
       payload: { courtId: startMatchCourtId, matchId },
     });
     setStartMatchCourtId(null);
+    showToast(M.TOAST_MATCH_STARTED);
+  }
+
+  function handleAddToQueueFromCourt(payload: CreateQueuedMatchPayload) {
+    clearEndSessionError();
+    dispatch({ type: "CREATE_QUEUED_MATCH", payload });
+    setStartMatchCourtId(null);
+    showToast(M.TOAST_MATCH_QUEUED);
+  }
+
+  function handleStartNow(payload: CreateQueuedMatchPayload) {
+    if (!startMatchCourtId) return;
+
+    clearEndSessionError();
+    pendingCourtStartRef.current = {
+      courtId: startMatchCourtId,
+      payload,
+    };
+    dispatch({ type: "CREATE_QUEUED_MATCH", payload });
   }
 
   function handleUpdatePlayerState(playerId: string, state: PlayerState) {
@@ -135,11 +182,17 @@ export default function LivePage() {
 
   return (
     <>
-      <main className="max-w-lg mx-auto px-4 py-6 pb-32 space-y-6">
-        <LivePageHeader onQueue={() => router.push("/queue")} />
+      <main className="max-w-lg mx-auto px-4 py-6 pb-6 space-y-6">
+        <LivePageHeader
+          onQueue={() => router.push("/queue")}
+          onEndSession={handleEndSessionClick}
+        />
 
         {endSessionError && (
-          <p role="alert" className="text-sm text-danger bg-danger-muted rounded-[var(--radius)] px-3 py-2">
+          <p
+            role="alert"
+            className="text-sm text-danger bg-danger-muted rounded-[var(--radius)] px-3 py-2"
+          >
             {endSessionError}
           </p>
         )}
@@ -150,6 +203,7 @@ export default function LivePage() {
           courts={activeSession.courts}
           matches={activeSession.matches}
           players={activeSession.players}
+          queuedMatchCount={queuedMatchCount}
           onStartMatch={(courtId) => {
             clearEndSessionError();
             setStartMatchCourtId(courtId);
@@ -183,24 +237,14 @@ export default function LivePage() {
         />
       </main>
 
-      <div className="fixed bottom-0 inset-x-0 border-t border-border bg-card/95 backdrop-blur-sm px-4 py-4">
-        <div className="max-w-lg mx-auto">
-          <Button variant="destructive" fullWidth onClick={handleEndSessionClick}>
-            {M.LIVE_END_SESSION_BUTTON}
-          </Button>
-        </div>
-      </div>
-
-      <StartMatchModal
+      <CourtActionSheet
         open={startMatchCourtId !== null}
         session={activeSession}
         courtName={selectedCourt?.name ?? ""}
         onSelectMatch={handleSelectMatch}
+        onAddToQueue={handleAddToQueueFromCourt}
+        onStartNow={handleStartNow}
         onClose={() => setStartMatchCourtId(null)}
-        onGoToQueue={() => {
-          setStartMatchCourtId(null);
-          router.push("/queue");
-        }}
       />
 
       <ConfirmDialog
