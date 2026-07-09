@@ -23,9 +23,6 @@ export function CompletedMatchCard({ match, players }: CompletedMatchCardProps) 
 
   return (
     <Card className="space-y-3">
-      <p className="text-sm font-semibold text-court-green">
-        {getMatchTypeLabel(match.type)}
-      </p>
       <div className="flex rounded-[var(--radius)] bg-shuttle-lime-muted/40 border border-border overflow-hidden text-sm">
         <div className="flex-1 p-3 space-y-1 text-center">
           {getSidePlayerIds(match.matchSides, "A").map((id) => (

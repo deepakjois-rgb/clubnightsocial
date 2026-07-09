@@ -46,9 +46,9 @@ export function SessionHeader({ session }: SessionHeaderProps) {
           </dd>
         </div>
         <div>
-          <dt className="text-muted truncate">{session.organiserName}</dt>
-          <dd className="font-semibold text-muted mt-0.5 text-[10px]">
-            {M.LIVE_ORGANISER}
+          <dt className="text-muted truncate">{M.LIVE_ORGANISER}</dt>
+          <dd className="font-semibold text-foreground mt-0.5">
+            {session.organiserName}
           </dd>
         </div>
       </dl>

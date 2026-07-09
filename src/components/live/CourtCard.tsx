@@ -100,21 +100,17 @@ export function CourtCard({
             sideBIds={[]}
             getPlayerName={getPlayerName}
           />
-          <p className="text-xs text-muted text-center">
-            {queuedMatchCount > 0
-              ? M.LIVE_COURT_QUEUE_COUNT.replace(
-                  "{n}",
-                  String(queuedMatchCount)
-                )
-              : M.LIVE_COURT_NO_QUEUE}
-          </p>
+  
           <Button
             variant="primary"
             fullWidth
             className="py-2.5"
             onClick={() => onStartMatch(court.id)}
           >
-            {M.LIVE_START_MATCH}
+            {M.LIVE_START_MATCH.replace(
+                  "{n}",
+                  String(queuedMatchCount)
+                )}
           </Button>
         </>
       )}

@@ -41,7 +41,7 @@ export function QueuedMatchCard({
 
     return (
       <div key={id} className="flex items-center justify-between gap-2">
-        <span className="text-sm font-medium">{player.name}</span>
+        <span className="text-sm font-medium max-w-1/2 truncate">{player.name}</span>
         <Badge className={getPlayerStateBadgeClass(player.state)}>
           {getPlayerStateLabel(player.state)}
         </Badge>
@@ -52,9 +52,6 @@ export function QueuedMatchCard({
   return (
     <>
       <Card hoverable className="space-y-3">
-        <p className="text-sm font-semibold text-court-green">
-          {getMatchTypeLabel(match.type)}
-        </p>
 
         <div className="flex rounded-[var(--radius)] bg-shuttle-lime-muted/40 border border-border overflow-hidden">
           <div className="flex-1 p-3 space-y-2">

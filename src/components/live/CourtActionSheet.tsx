@@ -139,18 +139,15 @@ export function CourtActionSheet({
           >
             {courtName}
           </h2>
-          <p className="text-sm text-muted mt-0.5">
-            {M.LIVE_COURT_ACTION_SUBTITLE}
-          </p>
         </div>
 
         <div className="p-4 space-y-5">
           {hasQueue && (
             <section className="space-y-2">
-              <h3 className="text-sm font-semibold text-foreground">
+              <h3 className="text-base font-semibold text-foreground">
                 {M.LIVE_FROM_QUEUE_SECTION} ({queuedMatches.length})
               </h3>
-              <p className="text-xs text-muted">{M.LIVE_QUEUE_TAP_TO_START}</p>
+
               <QueuedMatchPicker
                 session={session}
                 onSelectMatch={onSelectMatch}
@@ -158,8 +155,10 @@ export function CourtActionSheet({
             </section>
           )}
 
+          <hr className="h-px my-4 bg-neutral-quaternary border border-border"></hr>
+
           <section className="space-y-3">
-            <h3 className="text-sm font-semibold text-foreground">
+            <h3 className="text-base font-semibold text-foreground">
               {M.LIVE_CREATE_NEW_SECTION}
             </h3>
             <MatchComposer

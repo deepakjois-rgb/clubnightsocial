@@ -26,9 +26,6 @@ function LiveMatchCard({ match, courtName, players }: LiveMatchCardProps) {
     <Card className="space-y-3">
       <div className="flex items-center justify-between">
         <p className="text-sm font-bold text-court-green">{courtName}</p>
-        <span className="text-xs font-medium text-muted">
-          {getMatchTypeLabel(match.type)}
-        </span>
       </div>
       <div className="flex rounded-[var(--radius)] bg-shuttle-lime-muted/40 border border-border overflow-hidden text-sm">
         <div className="flex-1 p-3 space-y-1 text-center">

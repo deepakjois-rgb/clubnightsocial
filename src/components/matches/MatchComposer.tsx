@@ -116,9 +116,6 @@ export function MatchComposer({
   return (
     <div className="space-y-5">
       <fieldset className="space-y-2">
-        <legend className="text-sm font-semibold text-foreground">
-          {M.QUEUE_MATCH_TYPE}
-        </legend>
         <div className="flex gap-2">
           {(["SINGLES", "DOUBLES"] as const).map((type) => (
             <button
@@ -137,13 +134,9 @@ export function MatchComposer({
         </div>
       </fieldset>
 
-      <p className="text-xs text-muted leading-relaxed">
-        {M.QUEUE_SIDE_ASSIGNMENT_HELP}
-      </p>
-
-      {(sideA.length > 0 || sideB.length > 0) && (
+      {(
         <div className="flex rounded-[var(--radius)] bg-shuttle-lime-muted/50 border border-border overflow-hidden text-sm">
-          <div className="flex-1 p-3 space-y-1 text-center">
+          <div className="flex-1 flex flex-col justify-center gap-1 p-3 min-h-18 text-center">
             {sideA.map((id) => (
               <p key={id} className="font-medium">
                 {getPlayerName(id)}
@@ -151,7 +144,7 @@ export function MatchComposer({
             ))}
           </div>
           <div className="w-px bg-border shrink-0" aria-hidden="true" />
-          <div className="flex-1 p-3 space-y-1 text-center">
+          <div className="flex-1 flex flex-col justify-center gap-1 p-3 min-h-18 text-center">
             {sideB.map((id) => (
               <p key={id} className="font-medium">
                 {getPlayerName(id)}

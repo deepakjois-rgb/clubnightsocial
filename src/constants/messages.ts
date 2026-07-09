@@ -24,13 +24,13 @@ export const MESSAGES = {
   START_SESSION_BUTTON: "Start Session",
 
   LIVE_PAGE_TITLE: "Courts",
-  LIVE_QUEUE_BUTTON: "Queue",
+  LIVE_QUEUE_BUTTON: "Queue matches",
   LIVE_END_SESSION_BUTTON: "End Session",
   LIVE_BACK_BUTTON: "Back",
   LIVE_SELECT_MATCH_TITLE: "Select match",
   LIVE_COURT_ACTION_SUBTITLE: "Pick from the queue or create a new match",
-  LIVE_FROM_QUEUE_SECTION: "From queue",
-  LIVE_CREATE_NEW_SECTION: "Create new",
+  LIVE_FROM_QUEUE_SECTION: "Pick from the queue",
+  LIVE_CREATE_NEW_SECTION: "Or create a new match",
   LIVE_START_ON_COURT: "Start on",
   LIVE_NEXT_UP: "Next",
   LIVE_QUEUE_TAP_TO_START: "Tap a match to start it on this court",
@@ -49,7 +49,7 @@ export const MESSAGES = {
   LIVE_COURTS_SECTION: "Courts",
   LIVE_WAITING_PLAYERS: "Waiting",
   LIVE_UNAVAILABLE_PLAYERS: "Away",
-  LIVE_START_MATCH: "Start Match",
+  LIVE_START_MATCH: "Start Match ({n} in queue)",
   LIVE_NO_WAITING_PLAYERS_TITLE: "Everyone's playing",
   LIVE_NO_WAITING_PLAYERS_DESC:
     "No players are waiting right now. They'll appear here when a match ends.",
@@ -69,7 +69,7 @@ export const MESSAGES = {
   LIVE_CONFIRM: "Confirm",
 
   LABEL_WAITING: "Waiting",
-  LABEL_ON_COURT: "On court",
+  LABEL_ON_COURT: "Playing",
   LABEL_AWAY: "Away",
   LABEL_FREE: "Free",
   LABEL_IN_PLAY: "In play",
@@ -110,7 +110,7 @@ export const MESSAGES = {
   QUEUE_MATCH_TYPE: "Match type",
   QUEUE_SINGLES: "Singles",
   QUEUE_DOUBLES: "Doubles",
-  QUEUE_PLAYER_SELECTION: "Player selection",
+  QUEUE_PLAYER_SELECTION: "Select players",
   QUEUE_SIDE_ASSIGNMENT_HELP:
     "Pick players in order: first player(s) go to Side A, then Side B.",
   QUEUE_VS: "vs",
