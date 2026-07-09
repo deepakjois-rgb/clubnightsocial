@@ -1,6 +1,8 @@
 import type { Court, Match, Player } from "@/types";
 import { MESSAGES } from "@/constants/messages";
 import { MatchControls } from "@/components/matches/MatchControls";
+import { Badge, Button, Card } from "@/components/ui";
+import { getCourtStatusBadgeClass, getCourtStatusLabel } from "@/lib/labels";
 import { getSidePlayerIds } from "@/lib/utils";
 
 const M = MESSAGES;
@@ -20,6 +22,54 @@ function getMatchTypeLabel(type: Match["type"]): string {
     : M.QUEUE_MATCH_TYPE_DOUBLES;
 }
 
+function CourtSurface({
+  sideAIds,
+  sideBIds,
+  getPlayerName,
+  matchType,
+}: {
+  sideAIds: string[];
+  sideBIds: string[];
+  getPlayerName: (id: string) => string;
+  matchType?: Match["type"];
+}) {
+  return (
+    <div className="relative flex rounded-[var(--radius)] bg-shuttle-lime-muted/60 border border-[var(--court-green)]/10 min-h-[7rem] overflow-hidden">
+      {/* Side A */}
+      <div className="flex-1 flex flex-col items-center justify-center gap-1 p-3">
+        {sideAIds.map((id) => (
+          <span key={id} className="text-sm font-medium text-foreground text-center">
+            {getPlayerName(id)}
+          </span>
+        ))}
+      </div>
+
+      {/* Net */}
+      <div
+        className="w-px shrink-0 bg-[var(--court-green)]/25 relative"
+        aria-hidden="true"
+      >
+        <div className="absolute inset-y-2 left-1/2 -translate-x-1/2 w-0.5 bg-[var(--court-green)]/40 rounded-full" />
+      </div>
+
+      {/* Side B */}
+      <div className="flex-1 flex flex-col items-center justify-center gap-1 p-3">
+        {sideBIds.map((id) => (
+          <span key={id} className="text-sm font-medium text-foreground text-center">
+            {getPlayerName(id)}
+          </span>
+        ))}
+      </div>
+
+      {matchType && (
+        <span className="absolute top-2 left-1/2 -translate-x-1/2 text-[10px] font-medium text-muted uppercase tracking-wide">
+          {getMatchTypeLabel(matchType)}
+        </span>
+      )}
+    </div>
+  );
+}
+
 export function CourtCard({
   court,
   match,
@@ -36,48 +86,41 @@ export function CourtCard({
   }
 
   return (
-    <div className="border border-gray-200 rounded-lg p-4 space-y-3">
+    <Card className="space-y-4">
       <div className="flex items-center justify-between">
-        <span className="text-sm font-semibold">{court.name}</span>
-        <span
-          className={`text-xs font-semibold px-2 py-1 rounded ${
-            isFree
-              ? "bg-green-100 text-green-800"
-              : "bg-red-100 text-red-800"
-          }`}
-        >
-          {isFree ? M.LIVE_COURT_STATUS_FREE : M.LIVE_COURT_STATUS_OCCUPIED}
-        </span>
+        <h3 className="text-base font-bold text-court-green">{court.name}</h3>
+        <Badge className={getCourtStatusBadgeClass(isFree)}>
+          {getCourtStatusLabel(isFree)}
+        </Badge>
       </div>
 
       {isFree && (
-        <button
-          type="button"
-          onClick={() => onStartMatch(court.id)}
-          className="w-full py-3 text-sm font-medium bg-gray-900 text-white rounded-lg hover:bg-gray-700"
-        >
-          {M.LIVE_START_NEW_MATCH}
-        </button>
+        <>
+          <CourtSurface
+            sideAIds={[]}
+            sideBIds={[]}
+            getPlayerName={getPlayerName}
+          />
+          <Button variant="primary" fullWidth onClick={() => onStartMatch(court.id)}>
+            {M.LIVE_START_MATCH}
+          </Button>
+        </>
       )}
 
       {isLive && match && (
         <>
-          <p className="text-sm font-semibold">{getMatchTypeLabel(match.type)}</p>
-          <div className="text-sm space-y-1">
-            {getSidePlayerIds(match.matchSides, "A").map((id) => (
-              <p key={id}>{getPlayerName(id)}</p>
-            ))}
-            <p className="text-gray-400 font-medium py-1">{M.QUEUE_VS}</p>
-            {getSidePlayerIds(match.matchSides, "B").map((id) => (
-              <p key={id}>{getPlayerName(id)}</p>
-            ))}
-          </div>
+          <CourtSurface
+            sideAIds={getSidePlayerIds(match.matchSides, "A")}
+            sideBIds={getSidePlayerIds(match.matchSides, "B")}
+            getPlayerName={getPlayerName}
+            matchType={match.type}
+          />
           <MatchControls
             onComplete={() => onCompleteMatch(match.id)}
             onAbandon={() => onAbandonMatch(match.id)}
           />
         </>
       )}
-    </div>
+    </Card>
   );
 }

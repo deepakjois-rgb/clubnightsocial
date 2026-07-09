@@ -1,4 +1,5 @@
 import { MESSAGES } from "@/constants/messages";
+import { Button } from "@/components/ui";
 
 const M = MESSAGES;
 
@@ -10,20 +11,14 @@ type MatchControlsProps = {
 export function MatchControls({ onComplete, onAbandon }: MatchControlsProps) {
   return (
     <div className="space-y-2">
-      <button
-        type="button"
-        onClick={onComplete}
-        className="w-full py-3 text-sm font-medium bg-gray-900 text-white rounded-lg hover:bg-gray-700"
-      >
+      <Button variant="primary" fullWidth onClick={onComplete}>
         {M.LIVE_COMPLETE_MATCH}
-      </button>
-      <button
-        type="button"
-        onClick={onAbandon}
-        className="w-full py-3 text-sm font-medium text-red-600 border border-red-200 rounded-lg hover:bg-red-50"
-      >
-        {M.LIVE_ABANDON_MATCH}
-      </button>
+      </Button>
+      <div className="text-center">
+        <Button variant="destructive-outline" onClick={onAbandon}>
+          {M.LIVE_ABANDON_MATCH}
+        </Button>
+      </div>
     </div>
   );
 }

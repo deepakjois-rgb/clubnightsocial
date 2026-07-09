@@ -3,6 +3,8 @@
 import type { Match, Player, Session } from "@/types";
 import { MESSAGES } from "@/constants/messages";
 import { canStartMatch, getQueuedMatches } from "@/services/matchService";
+import { Badge, Button, Card, EmptyState } from "@/components/ui";
+import { getPlayerStateBadgeClass, getPlayerStateLabel } from "@/lib/labels";
 import { getSidePlayerIds } from "@/lib/utils";
 
 const M = MESSAGES;
@@ -13,6 +15,7 @@ type StartMatchModalProps = {
   courtName: string;
   onSelectMatch: (matchId: string) => void;
   onClose: () => void;
+  onGoToQueue?: () => void;
 };
 
 function getMatchTypeLabel(type: Match["type"]): string {
@@ -27,13 +30,14 @@ export function StartMatchModal({
   courtName,
   onSelectMatch,
   onClose,
+  onGoToQueue,
 }: StartMatchModalProps) {
   if (!open) return null;
 
   const queuedMatches = getQueuedMatches(session);
 
-  function getPlayerName(players: Player[], id: string): string {
-    return players.find((p) => p.id === id)?.name ?? id;
+  function getPlayer(id: string): Player | undefined {
+    return session.players.find((p) => p.id === id);
   }
 
   return (
@@ -45,22 +49,30 @@ export function StartMatchModal({
     >
       <button
         type="button"
-        className="absolute inset-0 bg-black/50"
+        className="absolute inset-0 bg-black/40"
         onClick={onClose}
         aria-label={M.QUEUE_CANCEL}
       />
 
-      <div className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto mx-4 mb-4 sm:mb-0 bg-white rounded-lg shadow-lg">
-        <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-3">
-          <h2 id="start-match-modal-title" className="text-lg font-semibold">
+      <div className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto mx-4 mb-4 sm:mb-0 bg-card rounded-t-[var(--radius-lg)] sm:rounded-[var(--radius-lg)] shadow-lg animate-sheet-in">
+        <div className="sticky top-0 bg-card border-b border-border px-4 py-4">
+          <h2 id="start-match-modal-title" className="text-lg font-semibold text-court-green">
             {M.LIVE_SELECT_MATCH_TITLE}
           </h2>
-          <p className="text-sm text-gray-500">{courtName}</p>
+          <p className="text-sm text-muted mt-0.5">{courtName}</p>
         </div>
 
         <div className="p-4 space-y-3">
           {queuedMatches.length === 0 ? (
-            <p className="text-sm text-gray-500">{M.LIVE_NO_QUEUED_MATCHES}</p>
+            <EmptyState
+              title={M.LIVE_NO_QUEUED_MATCHES_TITLE}
+              description={M.LIVE_NO_QUEUED_MATCHES_DESC}
+              action={
+                onGoToQueue
+                  ? { label: M.LIVE_NO_QUEUED_MATCHES_ACTION, onClick: onGoToQueue }
+                  : undefined
+              }
+            />
           ) : (
             queuedMatches.map((match) => {
               const canStart = canStartMatch(session, match.id);
@@ -68,38 +80,56 @@ export function StartMatchModal({
               const sideB = getSidePlayerIds(match.matchSides, "B");
 
               return (
-                <div
-                  key={match.id}
-                  className="border border-gray-200 rounded-lg p-4 space-y-2"
-                >
-                  <p className="text-sm font-semibold">
+                <Card key={match.id} className="space-y-3">
+                  <p className="text-sm font-semibold text-court-green">
                     {getMatchTypeLabel(match.type)}
                   </p>
-                  <div className="text-sm space-y-1">
-                    {sideA.map((id) => (
-                      <p key={id}>{getPlayerName(session.players, id)}</p>
-                    ))}
-                    <p className="text-gray-400 font-medium py-1">{M.QUEUE_VS}</p>
-                    {sideB.map((id) => (
-                      <p key={id}>{getPlayerName(session.players, id)}</p>
-                    ))}
+
+                  <div className="flex rounded-[var(--radius)] bg-shuttle-lime-muted/40 border border-border overflow-hidden">
+                    <div className="flex-1 p-3 space-y-2">
+                      {sideA.map((id) => {
+                        const player = getPlayer(id);
+                        if (!player) return null;
+                        return (
+                          <div key={id} className="flex items-center justify-between gap-1">
+                            <span className="text-sm font-medium">{player.name}</span>
+                            <Badge className={getPlayerStateBadgeClass(player.state)}>
+                              {getPlayerStateLabel(player.state)}
+                            </Badge>
+                          </div>
+                        );
+                      })}
+                    </div>
+                    <div className="w-px bg-border shrink-0" aria-hidden="true" />
+                    <div className="flex-1 p-3 space-y-2">
+                      {sideB.map((id) => {
+                        const player = getPlayer(id);
+                        if (!player) return null;
+                        return (
+                          <div key={id} className="flex items-center justify-between gap-1">
+                            <span className="text-sm font-medium">{player.name}</span>
+                            <Badge className={getPlayerStateBadgeClass(player.state)}>
+                              {getPlayerStateLabel(player.state)}
+                            </Badge>
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
 
                   {!canStart && (
-                    <p className="text-sm text-red-600">
-                      {M.LIVE_PLAYERS_UNAVAILABLE}
-                    </p>
+                    <p className="text-sm text-danger">{M.LIVE_PLAYERS_UNAVAILABLE}</p>
                   )}
 
-                  <button
-                    type="button"
+                  <Button
+                    variant="primary"
+                    fullWidth
                     disabled={!canStart}
                     onClick={() => onSelectMatch(match.id)}
-                    className="w-full py-3 text-sm font-medium bg-gray-900 text-white rounded-lg disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-700"
                   >
-                    {M.LIVE_START_NEW_MATCH}
-                  </button>
-                </div>
+                    {M.LIVE_START_MATCH}
+                  </Button>
+                </Card>
               );
             })
           )}

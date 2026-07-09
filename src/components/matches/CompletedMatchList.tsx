@@ -1,5 +1,6 @@
 import type { Match, Player } from "@/types";
 import { MESSAGES } from "@/constants/messages";
+import { Card } from "@/components/ui";
 import { getSidePlayerIds } from "@/lib/utils";
 
 const M = MESSAGES;
@@ -21,18 +22,28 @@ export function CompletedMatchCard({ match, players }: CompletedMatchCardProps) 
   }
 
   return (
-    <div className="border border-gray-200 rounded-lg p-4 space-y-3">
-      <p className="text-sm font-semibold">{getMatchTypeLabel(match.type)}</p>
-      <div className="text-sm space-y-1">
-        {getSidePlayerIds(match.matchSides, "A").map((id) => (
-          <p key={id}>{getPlayerName(id)}</p>
-        ))}
-        <p className="text-gray-400 font-medium py-1">{M.QUEUE_VS}</p>
-        {getSidePlayerIds(match.matchSides, "B").map((id) => (
-          <p key={id}>{getPlayerName(id)}</p>
-        ))}
+    <Card className="space-y-3">
+      <p className="text-sm font-semibold text-court-green">
+        {getMatchTypeLabel(match.type)}
+      </p>
+      <div className="flex rounded-[var(--radius)] bg-shuttle-lime-muted/40 border border-border overflow-hidden text-sm">
+        <div className="flex-1 p-3 space-y-1 text-center">
+          {getSidePlayerIds(match.matchSides, "A").map((id) => (
+            <p key={id} className="font-medium">
+              {getPlayerName(id)}
+            </p>
+          ))}
+        </div>
+        <div className="w-px bg-border shrink-0" aria-hidden="true" />
+        <div className="flex-1 p-3 space-y-1 text-center">
+          {getSidePlayerIds(match.matchSides, "B").map((id) => (
+            <p key={id} className="font-medium">
+              {getPlayerName(id)}
+            </p>
+          ))}
+        </div>
       </div>
-    </div>
+    </Card>
   );
 }
 
@@ -43,7 +54,11 @@ type CompletedMatchListProps = {
 
 export function CompletedMatchList({ matches, players }: CompletedMatchListProps) {
   if (matches.length === 0) {
-    return <p className="text-sm text-gray-500">{M.QUEUE_NO_COMPLETED_MATCHES}</p>;
+    return (
+      <p className="text-sm text-muted text-center py-4">
+        {M.QUEUE_NO_COMPLETED_MATCHES}
+      </p>
+    );
   }
 
   return (

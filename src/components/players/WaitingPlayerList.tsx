@@ -2,8 +2,12 @@
 
 import { useEffect, useState } from "react";
 import type { Player } from "@/types";
+import { MESSAGES } from "@/constants/messages";
+import { EmptyState } from "@/components/ui";
 import { getElapsedMinutes } from "@/lib/utils";
 import { WaitingPlayerRow } from "./WaitingPlayerRow";
+
+const M = MESSAGES;
 
 type WaitingPlayerListAction = {
   label: string;
@@ -13,14 +17,12 @@ type WaitingPlayerListAction = {
 type WaitingPlayerListProps = {
   title: string;
   players: Player[];
-  emptyMessage: string;
   action?: WaitingPlayerListAction;
 };
 
 export function WaitingPlayerList({
   title,
   players,
-  emptyMessage,
   action,
 }: WaitingPlayerListProps) {
   const [, setMinuteTick] = useState(0);
@@ -35,9 +37,12 @@ export function WaitingPlayerList({
 
   return (
     <section className="space-y-3">
-      <h2 className="text-lg font-semibold">{title}</h2>
+      <h2 className="text-lg font-semibold text-foreground">{title}</h2>
       {players.length === 0 ? (
-        <p className="text-sm text-gray-500">{emptyMessage}</p>
+        <EmptyState
+          title={M.LIVE_NO_WAITING_PLAYERS_TITLE}
+          description={M.LIVE_NO_WAITING_PLAYERS_DESC}
+        />
       ) : (
         <ul className="space-y-2">
           {players.map((player) => (

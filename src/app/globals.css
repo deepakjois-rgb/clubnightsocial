@@ -1,26 +1,94 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --court-green: #1b4d3e;
+  --court-green-hover: #163f33;
+  --shuttle-lime: #c8e6a0;
+  --shuttle-lime-muted: #e8f4d4;
+  --surface: #f5f4f1;
+  --card: #ffffff;
+  --foreground: #1a1a1a;
+  --muted: #6b7280;
+  --border: #e8e6e1;
+  --danger: #b91c1c;
+  --danger-muted: #fef2f2;
+  --waiting: #fef9c3;
+  --waiting-text: #854d0e;
+  --playing: #dcfce7;
+  --playing-text: #166534;
+  --away: #f3f4f6;
+  --away-text: #4b5563;
+  --free: #e8f4d4;
+  --free-text: #1b4d3e;
+  --in-play: #dbeafe;
+  --in-play-text: #1e40af;
+  --radius: 0.75rem;
+  --radius-lg: 1rem;
+  --shadow-card: 0 1px 3px rgba(27, 77, 62, 0.06), 0 4px 12px rgba(27, 77, 62, 0.04);
 }
 
 @theme inline {
-  --color-background: var(--background);
+  --color-court-green: var(--court-green);
+  --color-court-green-hover: var(--court-green-hover);
+  --color-shuttle-lime: var(--shuttle-lime);
+  --color-shuttle-lime-muted: var(--shuttle-lime-muted);
+  --color-surface: var(--surface);
+  --color-card: var(--card);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-danger: var(--danger);
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
 
 body {
-  background: var(--background);
+  background: var(--surface);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes toast-out {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(0.5rem);
+  }
+}
+
+@keyframes sheet-in {
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-toast-in {
+  animation: toast-in 200ms ease forwards;
+}
+
+.animate-toast-out {
+  animation: toast-out 200ms ease forwards;
+}
+
+.animate-sheet-in {
+  animation: sheet-in 250ms ease forwards;
 }

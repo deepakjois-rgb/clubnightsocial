@@ -11,6 +11,7 @@ import {
   QueuePageHeader,
 } from "@/components/queue";
 import { CompletedMatchList } from "@/components/matches";
+import { Button, useToast } from "@/components/ui";
 import {
   getCompletedMatches,
   getLiveMatches,
@@ -27,6 +28,7 @@ const M = MESSAGES;
 export default function QueuePage() {
   const router = useRouter();
   const { session, dispatch } = useSession();
+  const { showToast } = useToast();
   const [showCreateForm, setShowCreateForm] = useState(false);
 
   useEffect(() => {
@@ -36,7 +38,7 @@ export default function QueuePage() {
     }
 
     if (isCompletedSession(session)) {
-      router.replace("/sessionsummary");
+      router.replace("/summary");
     }
   }, [session, router]);
 
@@ -51,6 +53,7 @@ export default function QueuePage() {
   function handleCreateMatch(payload: CreateQueuedMatchPayload) {
     dispatch({ type: "CREATE_QUEUED_MATCH", payload });
     setShowCreateForm(false);
+    showToast(M.TOAST_MATCH_QUEUED);
   }
 
   function handleDeleteMatch(matchId: string) {
@@ -59,22 +62,23 @@ export default function QueuePage() {
 
   return (
     <>
-      <main className="max-w-lg mx-auto px-4 py-8 pb-24 space-y-8">
+      <main className="max-w-lg mx-auto px-4 py-6 pb-28 space-y-6">
         <QueuePageHeader onBack={() => router.push("/live")} />
 
         <section className="space-y-3">
-          <h2 className="text-lg font-semibold">
+          <h2 className="text-lg font-semibold text-foreground">
             {M.QUEUE_MATCH_QUEUE_SECTION} ({queuedMatches.length})
           </h2>
           <QueuedMatchList
             matches={queuedMatches}
             players={session.players}
             onDelete={handleDeleteMatch}
+            onCreateMatch={() => setShowCreateForm(true)}
           />
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-lg font-semibold">
+          <h2 className="text-lg font-semibold text-foreground">
             {M.QUEUE_LIVE_SECTION} ({liveMatches.length})
           </h2>
           <LiveMatchList
@@ -85,7 +89,7 @@ export default function QueuePage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-lg font-semibold">
+          <h2 className="text-lg font-semibold text-foreground">
             {M.QUEUE_COMPLETED_SECTION} ({completedMatches.length})
           </h2>
           <CompletedMatchList
@@ -95,15 +99,11 @@ export default function QueuePage() {
         </section>
       </main>
 
-      <div className="fixed bottom-0 inset-x-0 border-t border-gray-200 bg-white px-4 py-4">
+      <div className="fixed bottom-0 inset-x-0 border-t border-border bg-card/95 backdrop-blur-sm px-4 py-4">
         <div className="max-w-lg mx-auto">
-          <button
-            type="button"
-            onClick={() => setShowCreateForm(true)}
-            className="w-full py-3 bg-gray-900 text-white font-semibold rounded-lg hover:bg-gray-700"
-          >
+          <Button variant="primary" fullWidth onClick={() => setShowCreateForm(true)}>
             {M.QUEUE_CREATE_MATCH}
-          </button>
+          </Button>
         </div>
       </div>
 

@@ -11,11 +11,7 @@ type SessionHeaderProps = {
   session: Session;
 };
 
-// Top-of-page summary for the Live dashboard.
-// Displays key session metadata pulled directly from SessionContext state.
 export function SessionHeader({ session }: SessionHeaderProps) {
-  // Duration is stored in local state so the display can update over time
-  // without re-fetching or mutating the session object.
   const [elapsedMinutes, setElapsedMinutes] = useState(() =>
     getElapsedMinutes(session.startedAt)
   );
@@ -29,24 +25,31 @@ export function SessionHeader({ session }: SessionHeaderProps) {
   }, [session.startedAt]);
 
   return (
-    <section className="space-y-3">
-      {/* Two-column grid of session stats */}
-      <dl className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+    <section className="bg-card rounded-[var(--radius-lg)] border border-border px-4 py-3 shadow-[var(--shadow-card)]">
+      <dl className="grid grid-cols-4 gap-2 text-center text-xs">
         <div>
-          <dt className="text-gray-500">{M.LIVE_ORGANISER}</dt>
-          <dd className="font-medium">{session.organiserName}</dd>
+          <dt className="text-muted">{M.LIVE_DURATION}</dt>
+          <dd className="font-semibold text-foreground mt-0.5">
+            {elapsedMinutes} {M.LIVE_DURATION_MINUTES}
+          </dd>
         </div>
         <div>
-          <dt className="text-gray-500">{M.LIVE_COURTS}</dt>
-          <dd className="font-medium">{session.courts.length}</dd>
+          <dt className="text-muted">{M.LIVE_COURTS}</dt>
+          <dd className="font-semibold text-foreground mt-0.5">
+            {session.courts.length}
+          </dd>
         </div>
         <div>
-          <dt className="text-gray-500">{M.LIVE_PLAYERS}</dt>
-          <dd className="font-medium">{session.players.length}</dd>
+          <dt className="text-muted">{M.LIVE_PLAYERS}</dt>
+          <dd className="font-semibold text-foreground mt-0.5">
+            {session.players.length}
+          </dd>
         </div>
         <div>
-          <dt className="text-gray-500">{M.LIVE_DURATION}</dt>
-          <dd className="font-medium">{elapsedMinutes + " " + M.LIVE_DURATION_MINUTES}</dd>
+          <dt className="text-muted truncate">{session.organiserName}</dt>
+          <dd className="font-semibold text-muted mt-0.5 text-[10px]">
+            {M.LIVE_ORGANISER}
+          </dd>
         </div>
       </dl>
     </section>

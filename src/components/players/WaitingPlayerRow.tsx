@@ -1,4 +1,5 @@
 import { MESSAGES } from "@/constants/messages";
+import { Badge, Button } from "@/components/ui";
 
 const M = MESSAGES;
 
@@ -21,29 +22,26 @@ export function WaitingPlayerRow({
   action,
 }: WaitingPlayerRowProps) {
   return (
-    <li className="flex items-center justify-between gap-3 border border-gray-200 rounded-lg px-4 py-3">
+    <li className="flex items-center justify-between gap-3 bg-card border border-border rounded-[var(--radius-lg)] px-4 py-3 shadow-[var(--shadow-card)] transition-shadow duration-200 hover:shadow-md">
       <div className="min-w-0 space-y-1">
         <div className="flex items-center gap-2">
           <span className="text-sm font-medium truncate">{name}</span>
-          <span className="text-xs font-semibold px-2 py-1 rounded shrink-0 bg-yellow-100 text-yellow-800">
-            WAITING
-          </span>
+          <Badge className="bg-[var(--waiting)] text-[var(--waiting-text)]">
+            {M.LABEL_WAITING}
+          </Badge>
         </div>
-        <p className="text-xs text-gray-500">
+        <p className="text-xs text-muted">
+          <span className="font-medium text-foreground">
+            {waitingMinutes} {M.LIVE_DURATION_MINUTES}
+          </span>
+          {" · "}
           {M.LIVE_GAMES_PLAYED} {gamesPlayed}
-        </p>
-        <p className="text-xs text-gray-500">
-          {M.LIVE_WAITING_TIME} {waitingMinutes} {M.LIVE_DURATION_MINUTES}
         </p>
       </div>
       {action && (
-        <button
-          type="button"
-          onClick={action.onClick}
-          className="text-sm font-medium text-gray-700 border border-gray-300 rounded-lg px-3 py-2 shrink-0 hover:bg-gray-50"
-        >
+        <Button variant="secondary" className="!py-2 !px-3 text-xs shrink-0" onClick={action.onClick}>
           {action.label}
-        </button>
+        </Button>
       )}
     </li>
   );

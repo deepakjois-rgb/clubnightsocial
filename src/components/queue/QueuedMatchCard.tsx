@@ -1,5 +1,11 @@
+"use client";
+
+import { useState } from "react";
 import type { Match, Player } from "@/types";
 import { MESSAGES } from "@/constants/messages";
+import { ConfirmDialog } from "@/components/matches";
+import { Badge, Button, Card } from "@/components/ui";
+import { getPlayerStateBadgeClass, getPlayerStateLabel } from "@/lib/labels";
 import { getSidePlayerIds } from "@/lib/utils";
 
 const M = MESSAGES;
@@ -11,45 +17,76 @@ type QueuedMatchCardProps = {
 };
 
 function getMatchTypeLabel(type: Match["type"]): string {
-  return type === "SINGLES" ? M.QUEUE_MATCH_TYPE_SINGLES : M.QUEUE_MATCH_TYPE_DOUBLES;
+  return type === "SINGLES"
+    ? M.QUEUE_MATCH_TYPE_SINGLES
+    : M.QUEUE_MATCH_TYPE_DOUBLES;
 }
 
-export function QueuedMatchCard({ match, players, onDelete }: QueuedMatchCardProps) {
+export function QueuedMatchCard({
+  match,
+  players,
+  onDelete,
+}: QueuedMatchCardProps) {
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const sideA = getSidePlayerIds(match.matchSides, "A");
   const sideB = getSidePlayerIds(match.matchSides, "B");
 
-  function getPlayerName(id: string): string {
-    return players.find((p) => p.id === id)?.name ?? id;
+  function getPlayer(id: string): Player | undefined {
+    return players.find((p) => p.id === id);
   }
 
-  const typeLabel = getMatchTypeLabel(match.type);
+  function renderPlayer(id: string) {
+    const player = getPlayer(id);
+    if (!player) return null;
+
+    return (
+      <div key={id} className="flex items-center justify-between gap-2">
+        <span className="text-sm font-medium">{player.name}</span>
+        <Badge className={getPlayerStateBadgeClass(player.state)}>
+          {getPlayerStateLabel(player.state)}
+        </Badge>
+      </div>
+    );
+  }
 
   return (
-    <div className="border border-gray-200 rounded-lg p-4 space-y-3">
-      <p className="text-sm font-semibold">{typeLabel}</p>
+    <>
+      <Card hoverable className="space-y-3">
+        <p className="text-sm font-semibold text-court-green">
+          {getMatchTypeLabel(match.type)}
+        </p>
 
-      <div className="text-sm space-y-1">
-        {sideA.map((id) => (
-          <p key={id}>{getPlayerName(id)}</p>
-        ))}
-        <p className="text-gray-400 font-medium py-1">{M.QUEUE_VS}</p>
-        {sideB.map((id) => (
-          <p key={id}>{getPlayerName(id)}</p>
-        ))}
-      </div>
+        <div className="flex rounded-[var(--radius)] bg-shuttle-lime-muted/40 border border-border overflow-hidden">
+          <div className="flex-1 p-3 space-y-2">
+            {sideA.map(renderPlayer)}
+          </div>
+          <div className="w-px bg-border shrink-0" aria-hidden="true" />
+          <div className="flex-1 p-3 space-y-2">
+            {sideB.map(renderPlayer)}
+          </div>
+        </div>
 
-      <button
-        type="button"
-        onClick={() => {
-          if (window.confirm(M.QUEUE_DELETE_CONFIRM)) {
-            onDelete(match.id);
-          }
+        <Button
+          variant="destructive-outline"
+          fullWidth
+          onClick={() => setShowDeleteConfirm(true)}
+          aria-label={M.QUEUE_DELETE_MATCH}
+        >
+          {M.QUEUE_DELETE}
+        </Button>
+      </Card>
+
+      <ConfirmDialog
+        open={showDeleteConfirm}
+        message={M.QUEUE_DELETE_CONFIRM}
+        confirmLabel={M.QUEUE_DELETE}
+        destructive
+        onConfirm={() => {
+          onDelete(match.id);
+          setShowDeleteConfirm(false);
         }}
-        className="w-full py-3 text-sm font-medium text-red-600 border border-red-200 rounded-lg hover:bg-red-50"
-        aria-label={M.QUEUE_DELETE_MATCH}
-      >
-        {M.QUEUE_DELETE}
-      </button>
-    </div>
+        onCancel={() => setShowDeleteConfirm(false)}
+      />
+    </>
   );
 }

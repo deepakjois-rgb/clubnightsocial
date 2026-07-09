@@ -4,7 +4,13 @@ import { useState } from "react";
 import type { Player, MatchType } from "@/types";
 import { MESSAGES } from "@/constants/messages";
 import { APP_CONSTANTS } from "@/constants/appConstants";
-import { getRequiredPlayerCount, buildMatchSides, getSidePlayerIds } from "@/lib/utils";
+import { Badge, Button } from "@/components/ui";
+import { getPlayerStateBadgeClass, getPlayerStateLabel } from "@/lib/labels";
+import {
+  getRequiredPlayerCount,
+  buildMatchSides,
+  getSidePlayerIds,
+} from "@/lib/utils";
 import type { CreateQueuedMatchPayload } from "@/services/matchService";
 
 const M = MESSAGES;
@@ -13,12 +19,6 @@ type CreateMatchFormProps = {
   players: Player[];
   onSubmit: (payload: CreateQueuedMatchPayload) => void;
   onCancel: () => void;
-};
-
-const STATE_BADGE_STYLES: Record<Player["state"], string> = {
-  WAITING: "bg-yellow-100 text-yellow-800",
-  PLAYING: "bg-green-100 text-green-800",
-  UNAVAILABLE: "bg-gray-100 text-gray-600",
 };
 
 function getPlayerCountForType(type: MatchType): number {
@@ -84,52 +84,57 @@ export function CreateMatchForm({
   }
 
   return (
-    <div className="border border-gray-200 rounded-lg p-4 space-y-4">
-      {/* Match type */}
+    <div className="space-y-5">
       <fieldset className="space-y-2">
-        <legend className="text-sm font-semibold">{M.QUEUE_MATCH_TYPE}</legend>
-        <div className="flex gap-4">
-          <label className="flex items-center gap-2 text-sm cursor-pointer">
-            <input
-              type="radio"
-              name="match-type"
-              value="SINGLES"
-              checked={matchType === "SINGLES"}
-              onChange={() => handleMatchTypeChange("SINGLES")}
-            />
-            {M.QUEUE_SINGLES}
-          </label>
-          <label className="flex items-center gap-2 text-sm cursor-pointer">
-            <input
-              type="radio"
-              name="match-type"
-              value="DOUBLES"
-              checked={matchType === "DOUBLES"}
-              onChange={() => handleMatchTypeChange("DOUBLES")}
-            />
-            {M.QUEUE_DOUBLES}
-          </label>
+        <legend className="text-sm font-semibold text-foreground">
+          {M.QUEUE_MATCH_TYPE}
+        </legend>
+        <div className="flex gap-2">
+          {(["SINGLES", "DOUBLES"] as const).map((type) => (
+            <button
+              key={type}
+              type="button"
+              onClick={() => handleMatchTypeChange(type)}
+              className={`flex-1 py-2.5 text-sm font-medium rounded-[var(--radius)] border transition-colors duration-200 ${
+                matchType === type
+                  ? "bg-court-green text-white border-court-green"
+                  : "bg-card text-foreground border-border hover:bg-surface"
+              }`}
+            >
+              {type === "SINGLES" ? M.QUEUE_SINGLES : M.QUEUE_DOUBLES}
+            </button>
+          ))}
         </div>
       </fieldset>
 
-      {/* Side preview */}
+      <p className="text-xs text-muted leading-relaxed">
+        {M.QUEUE_SIDE_ASSIGNMENT_HELP}
+      </p>
+
       {(sideA.length > 0 || sideB.length > 0) && (
-        <div className="text-sm space-y-2 bg-gray-50 rounded-lg p-3">
-          {sideA.map((id) => (
-            <p key={id}>{getPlayerName(id)}</p>
-          ))}
-          {sideA.length > 0 && sideB.length > 0 && (
-            <p className="text-gray-400 font-medium">{M.QUEUE_VS}</p>
-          )}
-          {sideB.map((id) => (
-            <p key={id}>{getPlayerName(id)}</p>
-          ))}
+        <div className="flex rounded-[var(--radius)] bg-shuttle-lime-muted/50 border border-border overflow-hidden text-sm">
+          <div className="flex-1 p-3 space-y-1 text-center">
+            {sideA.map((id) => (
+              <p key={id} className="font-medium">
+                {getPlayerName(id)}
+              </p>
+            ))}
+          </div>
+          <div className="w-px bg-border shrink-0" aria-hidden="true" />
+          <div className="flex-1 p-3 space-y-1 text-center">
+            {sideB.map((id) => (
+              <p key={id} className="font-medium">
+                {getPlayerName(id)}
+              </p>
+            ))}
+          </div>
         </div>
       )}
 
-      {/* Player selection */}
       <div className="space-y-2">
-        <p className="text-sm font-semibold">{M.QUEUE_PLAYER_SELECTION}</p>
+        <p className="text-sm font-semibold text-foreground">
+          {M.QUEUE_PLAYER_SELECTION}
+        </p>
         <ul className="space-y-2">
           {players.map((player) => {
             const isSelected = selectedPlayerIds.includes(player.id);
@@ -142,19 +147,17 @@ export function CreateMatchForm({
                   type="button"
                   onClick={() => togglePlayer(player.id)}
                   disabled={isDisabled}
-                  className={`w-full flex items-center justify-between border rounded-lg px-4 py-3 text-sm transition-colors ${
+                  className={`w-full flex items-center justify-between border rounded-[var(--radius-lg)] px-4 py-3 text-sm transition-all duration-200 ${
                     isSelected
-                      ? "border-gray-900 bg-gray-50"
-                      : "border-gray-200"
-                  } ${isDisabled ? "opacity-40 cursor-not-allowed" : "cursor-pointer"}`}
+                      ? "border-court-green bg-shuttle-lime-muted/40 shadow-sm"
+                      : "border-border bg-card"
+                  } ${isDisabled ? "opacity-40 cursor-not-allowed" : "cursor-pointer hover:shadow-sm"}`}
                   aria-pressed={isSelected}
                 >
                   <span className="font-medium">{player.name}</span>
-                  <span
-                    className={`text-xs font-semibold px-2 py-1 rounded ${STATE_BADGE_STYLES[player.state]}`}
-                  >
-                    {player.state}
-                  </span>
+                  <Badge className={getPlayerStateBadgeClass(player.state)}>
+                    {getPlayerStateLabel(player.state)}
+                  </Badge>
                 </button>
               </li>
             );
@@ -163,26 +166,18 @@ export function CreateMatchForm({
       </div>
 
       {validationError && (
-        <p role="alert" className="text-sm text-red-600">
+        <p role="alert" className="text-sm text-danger">
           {validationError}
         </p>
       )}
 
       <div className="flex gap-2">
-        <button
-          type="button"
-          onClick={handleSubmit}
-          className="flex-1 py-3 bg-gray-900 text-white font-semibold rounded-lg hover:bg-gray-700"
-        >
+        <Button variant="primary" fullWidth onClick={handleSubmit}>
           {M.QUEUE_ADD_TO_QUEUE}
-        </button>
-        <button
-          type="button"
-          onClick={onCancel}
-          className="flex-1 py-3 border border-gray-300 font-semibold rounded-lg hover:bg-gray-50"
-        >
+        </Button>
+        <Button variant="secondary" fullWidth onClick={onCancel}>
           {M.QUEUE_CANCEL}
-        </button>
+        </Button>
       </div>
     </div>
   );

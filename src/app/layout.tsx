@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { SessionProvider } from "@/context/SessionProvider";
+import { ToastProvider } from "@/components/ui";
 
 export const metadata: Metadata = {
   title: "Club Night Social",
@@ -14,10 +15,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>
+      <body className="min-h-screen bg-surface text-foreground antialiased">
         <SessionProvider>
-          <p>Club Night Social</p>
-          {children}
+          <ToastProvider>{children}</ToastProvider>
         </SessionProvider>
       </body>
     </html>

@@ -1,4 +1,5 @@
 import type { Player } from "@/types";
+import { EmptyState } from "@/components/ui";
 import { PlayerRow } from "./PlayerRow";
 
 type PlayerListAction = {
@@ -9,21 +10,23 @@ type PlayerListAction = {
 type PlayerListProps = {
   title: string;
   players: Player[];
-  emptyMessage: string;
+  emptyTitle: string;
+  emptyDescription: string;
   action?: PlayerListAction;
 };
 
 export function PlayerList({
   title,
   players,
-  emptyMessage,
+  emptyTitle,
+  emptyDescription,
   action,
 }: PlayerListProps) {
   return (
     <section className="space-y-3">
-      <h2 className="text-lg font-semibold">{title}</h2>
+      <h2 className="text-lg font-semibold text-foreground">{title}</h2>
       {players.length === 0 ? (
-        <p className="text-sm text-gray-500">{emptyMessage}</p>
+        <EmptyState title={emptyTitle} description={emptyDescription} />
       ) : (
         <ul className="space-y-2">
           {players.map((player) => (

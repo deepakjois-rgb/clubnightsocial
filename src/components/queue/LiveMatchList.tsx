@@ -1,5 +1,6 @@
 import type { Court, Match, Player } from "@/types";
 import { MESSAGES } from "@/constants/messages";
+import { Card } from "@/components/ui";
 import { getSidePlayerIds } from "@/lib/utils";
 
 const M = MESSAGES;
@@ -22,19 +23,31 @@ function LiveMatchCard({ match, courtName, players }: LiveMatchCardProps) {
   }
 
   return (
-    <div className="border border-gray-200 rounded-lg p-4 space-y-3">
-      <p className="text-sm font-semibold">{courtName}</p>
-      <p className="text-sm text-gray-600">{getMatchTypeLabel(match.type)}</p>
-      <div className="text-sm space-y-1">
-        {getSidePlayerIds(match.matchSides, "A").map((id) => (
-          <p key={id}>{getPlayerName(id)}</p>
-        ))}
-        <p className="text-gray-400 font-medium py-1">{M.QUEUE_VS}</p>
-        {getSidePlayerIds(match.matchSides, "B").map((id) => (
-          <p key={id}>{getPlayerName(id)}</p>
-        ))}
+    <Card className="space-y-3">
+      <div className="flex items-center justify-between">
+        <p className="text-sm font-bold text-court-green">{courtName}</p>
+        <span className="text-xs font-medium text-muted">
+          {getMatchTypeLabel(match.type)}
+        </span>
       </div>
-    </div>
+      <div className="flex rounded-[var(--radius)] bg-shuttle-lime-muted/40 border border-border overflow-hidden text-sm">
+        <div className="flex-1 p-3 space-y-1 text-center">
+          {getSidePlayerIds(match.matchSides, "A").map((id) => (
+            <p key={id} className="font-medium">
+              {getPlayerName(id)}
+            </p>
+          ))}
+        </div>
+        <div className="w-px bg-border shrink-0" aria-hidden="true" />
+        <div className="flex-1 p-3 space-y-1 text-center">
+          {getSidePlayerIds(match.matchSides, "B").map((id) => (
+            <p key={id} className="font-medium">
+              {getPlayerName(id)}
+            </p>
+          ))}
+        </div>
+      </div>
+    </Card>
   );
 }
 
@@ -46,7 +59,9 @@ type LiveMatchListProps = {
 
 export function LiveMatchList({ matches, courts, players }: LiveMatchListProps) {
   if (matches.length === 0) {
-    return <p className="text-sm text-gray-500">{M.QUEUE_NO_LIVE_MATCHES}</p>;
+    return (
+      <p className="text-sm text-muted text-center py-4">{M.QUEUE_NO_LIVE_MATCHES}</p>
+    );
   }
 
   return (

@@ -22,9 +22,9 @@ export function CourtGrid({
   onAbandonMatch,
 }: CourtGridProps) {
   return (
-    <section className="space-y-3">
-      <h2 className="text-lg font-semibold">{M.LIVE_COURTS_SECTION}</h2>
-      <div className="grid grid-cols-1 gap-3">
+    <section className="space-y-4">
+      <h2 className="text-lg font-semibold text-foreground">{M.LIVE_COURTS_SECTION}</h2>
+      <div className="grid grid-cols-1 gap-4">
         {courts.map((court) => (
           <CourtCard
             key={court.id}

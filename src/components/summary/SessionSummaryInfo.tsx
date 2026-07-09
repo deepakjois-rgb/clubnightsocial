@@ -1,9 +1,7 @@
 import type { Session } from "@/types";
 import { MESSAGES } from "@/constants/messages";
-import {
-  formatTimestamp,
-  getDurationMinutes,
-} from "@/lib/utils";
+import { Card } from "@/components/ui";
+import { formatTimestamp, getDurationMinutes } from "@/lib/utils";
 
 const M = MESSAGES;
 
@@ -18,32 +16,32 @@ export function SessionSummaryInfo({ session }: SessionSummaryInfoProps) {
       : 0;
 
   return (
-    <section className="space-y-3">
-      <h2 className="text-lg font-semibold">{M.SUMMARY_SESSION_INFORMATION}</h2>
-      <dl className="space-y-2 text-sm">
-        <div className="flex gap-2">
-          <dt className="font-medium w-32">{M.SUMMARY_ORGANISER}</dt>
-          <dd>{session.organiserName}</dd>
+    <Card>
+      <h2 className="text-lg font-semibold text-foreground mb-4">
+        {M.SUMMARY_SESSION_INFORMATION}
+      </h2>
+      <dl className="space-y-3 text-sm">
+        <div className="flex justify-between gap-4">
+          <dt className="text-muted">{M.SUMMARY_ORGANISER}</dt>
+          <dd className="font-medium text-right">{session.organiserName}</dd>
         </div>
-        <div className="flex gap-2">
-          <dt className="font-medium w-32">{M.SUMMARY_START_TIME}</dt>
-          <dd>{formatTimestamp(session.startedAt)}</dd>
+        <div className="flex justify-between gap-4">
+          <dt className="text-muted">{M.SUMMARY_START_TIME}</dt>
+          <dd className="font-medium">{formatTimestamp(session.startedAt)}</dd>
         </div>
-        <div className="flex gap-2">
-          <dt className="font-medium w-32">{M.SUMMARY_END_TIME}</dt>
-          <dd>
-            {session.endedAt != null
-              ? formatTimestamp(session.endedAt)
-              : "—"}
+        <div className="flex justify-between gap-4">
+          <dt className="text-muted">{M.SUMMARY_END_TIME}</dt>
+          <dd className="font-medium">
+            {session.endedAt != null ? formatTimestamp(session.endedAt) : "—"}
           </dd>
         </div>
-        <div className="flex gap-2">
-          <dt className="font-medium w-32">{M.SUMMARY_DURATION}</dt>
-          <dd>
+        <div className="flex justify-between gap-4">
+          <dt className="text-muted">{M.SUMMARY_DURATION}</dt>
+          <dd className="font-medium">
             {durationMinutes} {M.LIVE_DURATION_MINUTES}
           </dd>
         </div>
       </dl>
-    </section>
+    </Card>
   );
 }

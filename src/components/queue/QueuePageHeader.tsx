@@ -1,4 +1,5 @@
 import { MESSAGES } from "@/constants/messages";
+import { Button } from "@/components/ui";
 
 const M = MESSAGES;
 
@@ -9,14 +10,12 @@ type QueuePageHeaderProps = {
 export function QueuePageHeader({ onBack }: QueuePageHeaderProps) {
   return (
     <header className="flex items-center justify-between gap-3">
-      <h1 className="text-2xl font-bold">{M.QUEUE_PAGE_TITLE}</h1>
-      <button
-        type="button"
-        onClick={onBack}
-        className="px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg hover:bg-gray-50"
-      >
+      <h1 className="text-2xl font-bold text-court-green tracking-tight">
+        {M.QUEUE_PAGE_TITLE}
+      </h1>
+      <Button variant="secondary" onClick={onBack}>
         {M.QUEUE_BACK_BUTTON}
-      </button>
+      </Button>
     </header>
   );
 }

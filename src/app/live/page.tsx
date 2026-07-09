@@ -8,11 +8,12 @@ import {
   LivePageHeader,
   SessionHeader,
   CourtGrid,
-  PlayerList,
-  WaitingPlayerList,
   StartMatchModal,
 } from "@/components/live";
 import { ConfirmDialog } from "@/components/matches";
+import { WaitingPlayerList } from "@/components/players/WaitingPlayerList";
+import { PlayerList } from "@/components/players/PlayerList";
+import { Button, useToast } from "@/components/ui";
 import { getWaitingPlayers } from "@/services/playerService";
 import {
   canEndSession,
@@ -32,6 +33,7 @@ function sortByName(players: Player[]): Player[] {
 export default function LivePage() {
   const router = useRouter();
   const { session, dispatch } = useSession();
+  const { showToast } = useToast();
 
   const [startMatchCourtId, setStartMatchCourtId] = useState<string | null>(
     null
@@ -47,7 +49,7 @@ export default function LivePage() {
     }
 
     if (isCompletedSession(session)) {
-      router.replace("/sessionsummary");
+      router.replace("/summary");
     }
   }, [session, router]);
 
@@ -88,6 +90,9 @@ export default function LivePage() {
       type: "UPDATE_PLAYER_STATE",
       payload: { playerId, state },
     });
+    showToast(
+      state === "UNAVAILABLE" ? M.TOAST_PLAYER_AWAY : M.TOAST_PLAYER_BACK
+    );
   }
 
   function handleCompleteMatch(matchId: string) {
@@ -96,6 +101,7 @@ export default function LivePage() {
       type: "COMPLETE_MATCH",
       payload: { matchId },
     });
+    showToast(M.TOAST_MATCH_COMPLETED);
   }
 
   function handleAbandonMatch() {
@@ -107,6 +113,7 @@ export default function LivePage() {
       payload: { matchId: abandonMatchId },
     });
     setAbandonMatchId(null);
+    showToast(M.TOAST_MATCH_ABANDONED);
   }
 
   function handleEndSessionClick() {
@@ -122,24 +129,23 @@ export default function LivePage() {
   function handleConfirmEndSession() {
     dispatch({ type: "END_SESSION" });
     setShowEndSessionConfirm(false);
-    router.push("/sessionsummary");
+    showToast(M.TOAST_SESSION_ENDED);
+    router.push("/summary");
   }
 
   return (
     <>
-      <main className="max-w-lg mx-auto px-4 py-8 space-y-8">
-        <LivePageHeader
-          onQueue={() => router.push("/queue")}
-          onEndSession={handleEndSessionClick}
-        />
+      <main className="max-w-lg mx-auto px-4 py-6 pb-32 space-y-6">
+        <LivePageHeader onQueue={() => router.push("/queue")} />
 
         {endSessionError && (
-          <p role="alert" className="text-sm text-red-600">
+          <p role="alert" className="text-sm text-danger bg-danger-muted rounded-[var(--radius)] px-3 py-2">
             {endSessionError}
           </p>
         )}
 
         <SessionHeader session={activeSession} />
+
         <CourtGrid
           courts={activeSession.courts}
           matches={activeSession.matches}
@@ -158,23 +164,32 @@ export default function LivePage() {
         <WaitingPlayerList
           title={M.LIVE_WAITING_PLAYERS}
           players={waitingPlayers}
-          emptyMessage={M.LIVE_NO_WAITING_PLAYERS}
           action={{
-            label: M.LIVE_MAKE_UNAVAILABLE,
+            label: M.LIVE_TAKE_BREAK,
             onClick: (player) =>
               handleUpdatePlayerState(player.id, "UNAVAILABLE"),
           }}
         />
+
         <PlayerList
           title={M.LIVE_UNAVAILABLE_PLAYERS}
           players={unavailablePlayers}
-          emptyMessage={M.LIVE_NO_UNAVAILABLE_PLAYERS}
+          emptyTitle={M.LIVE_NO_UNAVAILABLE_PLAYERS_TITLE}
+          emptyDescription={M.LIVE_NO_UNAVAILABLE_PLAYERS_DESC}
           action={{
-            label: M.LIVE_MOVE_TO_WAITING,
+            label: M.LIVE_BACK_IN,
             onClick: (player) => handleUpdatePlayerState(player.id, "WAITING"),
           }}
         />
       </main>
+
+      <div className="fixed bottom-0 inset-x-0 border-t border-border bg-card/95 backdrop-blur-sm px-4 py-4">
+        <div className="max-w-lg mx-auto">
+          <Button variant="destructive" fullWidth onClick={handleEndSessionClick}>
+            {M.LIVE_END_SESSION_BUTTON}
+          </Button>
+        </div>
+      </div>
 
       <StartMatchModal
         open={startMatchCourtId !== null}
@@ -182,11 +197,16 @@ export default function LivePage() {
         courtName={selectedCourt?.name ?? ""}
         onSelectMatch={handleSelectMatch}
         onClose={() => setStartMatchCourtId(null)}
+        onGoToQueue={() => {
+          setStartMatchCourtId(null);
+          router.push("/queue");
+        }}
       />
 
       <ConfirmDialog
         open={abandonMatchId !== null}
         message={M.LIVE_ABANDON_CONFIRM}
+        destructive
         onConfirm={handleAbandonMatch}
         onCancel={() => setAbandonMatchId(null)}
       />
@@ -194,6 +214,8 @@ export default function LivePage() {
       <ConfirmDialog
         open={showEndSessionConfirm}
         message={M.LIVE_END_SESSION_CONFIRM}
+        destructive
+        confirmLabel={M.LIVE_END_SESSION_BUTTON}
         onConfirm={handleConfirmEndSession}
         onCancel={() => setShowEndSessionConfirm(false)}
       />

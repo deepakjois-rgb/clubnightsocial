@@ -1,4 +1,6 @@
 import type { PlayerState } from "@/types";
+import { Badge, Button } from "@/components/ui";
+import { getPlayerStateBadgeClass, getPlayerStateLabel } from "@/lib/labels";
 
 type PlayerRowAction = {
   label: string;
@@ -11,31 +13,19 @@ type PlayerRowProps = {
   action?: PlayerRowAction;
 };
 
-const STATE_BADGE_STYLES: Record<PlayerState, string> = {
-  WAITING: "bg-yellow-100 text-yellow-800",
-  PLAYING: "bg-green-100 text-green-800",
-  UNAVAILABLE: "bg-gray-100 text-gray-600",
-};
-
 export function PlayerRow({ name, state, action }: PlayerRowProps) {
   return (
-    <li className="flex items-center justify-between gap-3 border border-gray-200 rounded-lg px-4 py-3">
+    <li className="flex items-center justify-between gap-3 bg-card border border-border rounded-[var(--radius-lg)] px-4 py-3 shadow-[var(--shadow-card)] transition-shadow duration-200 hover:shadow-md">
       <div className="flex items-center gap-2 min-w-0">
         <span className="text-sm font-medium truncate">{name}</span>
-        <span
-          className={`text-xs font-semibold px-2 py-1 rounded shrink-0 ${STATE_BADGE_STYLES[state]}`}
-        >
-          {state}
-        </span>
+        <Badge className={getPlayerStateBadgeClass(state)}>
+          {getPlayerStateLabel(state)}
+        </Badge>
       </div>
       {action && (
-        <button
-          type="button"
-          onClick={action.onClick}
-          className="text-sm font-medium text-gray-700 border border-gray-300 rounded-lg px-3 py-2 shrink-0 hover:bg-gray-50"
-        >
+        <Button variant="secondary" className="!py-2 !px-3 text-xs shrink-0" onClick={action.onClick}>
           {action.label}
-        </button>
+        </Button>
       )}
     </li>
   );

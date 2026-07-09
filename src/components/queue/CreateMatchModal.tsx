@@ -31,14 +31,17 @@ export function CreateMatchModal({
     >
       <button
         type="button"
-        className="absolute inset-0 bg-black/50"
+        className="absolute inset-0 bg-black/40"
         onClick={onClose}
         aria-label={M.QUEUE_CANCEL}
       />
 
-      <div className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto mx-4 mb-4 sm:mb-0 bg-white rounded-lg shadow-lg">
-        <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-3">
-          <h2 id="create-match-modal-title" className="text-lg font-semibold">
+      <div className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto mx-4 mb-4 sm:mb-0 bg-card rounded-t-[var(--radius-lg)] sm:rounded-[var(--radius-lg)] shadow-lg animate-sheet-in">
+        <div className="sticky top-0 bg-card border-b border-border px-4 py-4">
+          <h2
+            id="create-match-modal-title"
+            className="text-lg font-semibold text-court-green"
+          >
             {M.QUEUE_CREATE_MATCH_MODAL_TITLE}
           </h2>
         </div>
