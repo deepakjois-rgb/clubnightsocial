@@ -1,15 +1,20 @@
 export const MESSAGES = {
-  PAGE_TITLE: "Session setup",
+  PAGE_TITLE: "Start session    ",
+  SETUP_TAGLINE: "Run tonight's match board.",
+  SETUP_TAGLINE_DESC:
+    "Track players, organise matches, and keep every court moving.",
 
   ORGANISER_SECTION: "Organiser",
-  ORGANISER_NAME_LABEL: "Organiser name",
+  ORGANISER_NAME_LABEL: "Organiser",
   ORGANISER_NAME_PLACEHOLDER: "Enter organiser name",
 
   COURTS_SECTION: "Courts",
   COURT_COUNT_LABEL: "Number of courts",
+  COURT_COUNT_DECREASE: "Decrease court count",
+  COURT_COUNT_INCREASE: "Increase court count",
 
   PLAYERS_SECTION: "Players",
-  PLAYER_NAME_LABEL: "Player name",
+  PLAYER_NAME_LABEL: "Players",
   PLAYER_NAME_PLACEHOLDER: "Enter player name",
   ADD_PLAYER_BUTTON: "Add",
   REMOVE_PLAYER: "Remove",

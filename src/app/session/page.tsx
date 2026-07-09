@@ -81,6 +81,10 @@ export default function SetupPage() {
     courtCount <= AC.MAX_COURTS &&
     players.length >= AC.MIN_PLAYERS_TO_START;
 
+  function clampCourtCount(value: number): number {
+    return Math.min(AC.MAX_COURTS, Math.max(AC.MIN_COURTS, value));
+  }
+
   function handleStartSession() {
     dispatch({
       type: "START_SESSION",
@@ -97,14 +101,23 @@ export default function SetupPage() {
   return (
     <>
       <main className="max-w-lg mx-auto px-4 py-6 pb-28 space-y-6">
-        <h1 className="text-2xl font-bold text-court-green tracking-tight">
-          {M.PAGE_TITLE}
-        </h1>
+        <div className="space-y-1 mt-5">
+          <h1 className="text-2xl font-bold text-court-green tracking-tight">
+            {M.SETUP_TAGLINE}
+          </h1>
+          <p className="text-base tracking-tight">
+            {M.SETUP_TAGLINE_DESC}
+          </p>
+        </div>
 
-        <section className="space-y-3">
-          <h2 className="text-lg font-semibold text-foreground">
-            {M.ORGANISER_SECTION}
-          </h2>
+        <hr className="h-px my-8 bg-neutral-quaternary border border-border"></hr>
+
+        <p className="text-xl font-semibold text-court-green tracking-tight my-3">
+          {M.PAGE_TITLE}
+        </p>
+
+        <section className="space-y-1">
+
           <div className="space-y-1">
             <label htmlFor="organiser-name" className="block text-sm font-medium text-foreground">
               {M.ORGANISER_NAME_LABEL} <span aria-hidden="true">*</span>
@@ -123,29 +136,45 @@ export default function SetupPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-lg font-semibold text-foreground">{M.COURTS_SECTION}</h2>
           <div className="space-y-1">
             <label htmlFor="court-count" className="block text-sm font-medium text-foreground">
               {M.COURT_COUNT_LABEL}
             </label>
-            <input
-              id="court-count"
-              type="number"
-              min={AC.MIN_COURTS}
-              max={AC.MAX_COURTS}
-              value={courtCount}
-              onChange={(e) =>
-                setCourtCount(
-                  Math.max(AC.MIN_COURTS, parseInt(e.target.value, 10) || AC.MIN_COURTS)
-                )
-              }
-              className={`${inputClass} w-24`}
-            />
+            <div className="flex items-center gap-2">
+              <Button
+                variant="secondary"
+                className="w-11 shrink-0 px-0 py-2.5 text-lg leading-none"
+                onClick={() => setCourtCount((count) => clampCourtCount(count - 1))}
+                disabled={courtCount <= AC.MIN_COURTS}
+                aria-label={M.COURT_COUNT_DECREASE}
+              >
+                −
+              </Button>
+              <input
+                id="court-count"
+                type="number"
+                min={AC.MIN_COURTS}
+                max={AC.MAX_COURTS}
+                value={courtCount}
+                onChange={(e) =>
+                  setCourtCount(clampCourtCount(parseInt(e.target.value, 10) || AC.MIN_COURTS))
+                }
+                className={`${inputClass} w-16 text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
+              />
+              <Button
+                variant="secondary"
+                className="w-11 shrink-0 px-0 py-2.5 text-lg leading-none"
+                onClick={() => setCourtCount((count) => clampCourtCount(count + 1))}
+                disabled={courtCount >= AC.MAX_COURTS}
+                aria-label={M.COURT_COUNT_INCREASE}
+              >
+                +
+              </Button>
+            </div>
           </div>
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-lg font-semibold text-foreground">{M.PLAYERS_SECTION}</h2>
           <div className="space-y-1">
             <label htmlFor="player-name" className="block text-sm font-medium text-foreground">
               {M.PLAYER_NAME_LABEL}
